@@ -1,21 +1,27 @@
 $ebp-tt-header-height: 47px!default;
+$ebp-tt-default-col-width: 4em;
 
 .ebp-tt-container {
   height: 100%;
   border: 1px solid #ccc;
   overflow: hidden;
+  col {
+    width: $ebp-tt-default-col-width;
+    &.ebp-tt-index-col {
+      width: 2em;
+    }
+  }
 }
 
 .ebp-tt-header-wrapper {
   color: #666;
   table {
-    min-width: 130%;
+    //width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
     th.columnheader {
       background-color: #f2f3f3;
       height: $ebp-tt-header-height;
-      line-height: $ebp-tt-header-height;
       border: #CCCCCC solid;
       border-width: 0 1px 1px 0;
       padding-left: 1.286em;
@@ -31,14 +37,13 @@ $ebp-tt-header-height: 47px!default;
   height: calc(100% - #{$ebp-tt-header-height});
   color: #707070;
   table {
-    width: 130%;
+    //width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
     td {
       height: 45px;
-      line-height: 45px;
       padding-left: 1.286em;
-      background-color: #F9F9F9;
+      background-color: #FFFFFF;
       border: #E6E6E6 solid;
       border-width: 0 1px 1px 0;
       &:last-child {
@@ -48,11 +53,13 @@ $ebp-tt-header-height: 47px!default;
     tr:last-child > td {
       border-bottom: none;
     }
-  }
-}
 
-.ebp-tt-index-col {
-  width: 3em;
+    tr {
+      &:nth-child(odd) > td {
+        background-color: #F9F9F9;
+      }
+    }
+  }
 }
 
 .ebp-tt-index-cell {

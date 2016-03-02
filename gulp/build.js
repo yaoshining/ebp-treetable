@@ -16,7 +16,7 @@ gulp.task('partials',function() {
             quotes: true
         }))
         .pipe($.angularTemplatecache('templateCacheHtml.js', {
-            module: 'ebp-treetable',
+            module: 'ebp.treetable',
             root: 'src'
         }))
         .pipe(gulp.dest(conf.paths.tmp + '/partials/'));
