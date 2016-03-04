@@ -53,3 +53,11 @@ browserSync.use(browserSyncSpa({
 gulp.task('serve', ['watch'], function () {
     browserSyncInit([path.join(conf.paths.tmp, '/serve'), conf.paths.app],['google chrome']);
 });
+
+gulp.task('serve:e2e', ['inject'], function () {
+    browserSyncInit([conf.paths.tmp + '/serve', conf.paths.app], []);
+});
+
+gulp.task('serve:e2e-dist', ['build'], function () {
+    browserSyncInit(conf.paths.dist, []);
+});

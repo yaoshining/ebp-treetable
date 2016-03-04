@@ -46,7 +46,7 @@ $ebp-tt-default-col-width: 4em;
       background-color: #FFFFFF;
       border: #E6E6E6 solid;
       border-width: 0 1px 1px 0;
-      &:last-child {
+      &:last-child     {
         border-right-width: 0;
       }
     }

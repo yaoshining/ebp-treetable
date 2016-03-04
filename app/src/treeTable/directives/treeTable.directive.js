@@ -6,7 +6,7 @@ function linkFunc(scope, elem) {
     let tableWidth = elem.find('table').width()
     let containerWidth = elem.width();
     if(tableWidth <= containerWidth) {
-        elem.find('table').width(containerWidth);
+        elem.find('table').width('100%');
     }
     elem.addClass('ebp-tt-container');
 }
