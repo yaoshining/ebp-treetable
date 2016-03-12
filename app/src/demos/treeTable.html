@@ -1,5 +1,15 @@
-<div style="height: 100%">
-    <div ebp-treetable>
-
+<div style="height: 100%" ng-controller="TreeTableDemoController">
+    <div ebp-treetable="treeTableSettings">
+        <div ebp-treetable-col title="计划编辑" index="4">
+            <a href title="添加" class="ebp-tt-btn ebp-tt-btn-add"></a>
+            <a href title="编辑" class="ebp-tt-btn ebp-tt-btn-edit"></a>
+            <a href title="删除" class="ebp-tt-btn ebp-tt-btn-delete"></a>
+        </div>
+        <div ebp-treetable-col title="流程操作" index="5">
+            <a href title="审批" class="ebp-tt-btn ebp-tt-btn-approval"></a>
+            <a href title="调整" class="ebp-tt-btn ebp-tt-btn-adjust"></a>
+        </div>
+        <div ebp-treetable-col index="1">
+        </div>
     </div>
 </div>

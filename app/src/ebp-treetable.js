@@ -5,6 +5,7 @@ import layout from './layouts/layouts.module';
 import core from './treeTable/core.module';
 
 var ebpTreeTable = angular.module('ebp.treetable', [
+    'ngResource',
     layout.name,
     core.name
 ]);
