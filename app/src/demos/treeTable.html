@@ -1,9 +1,9 @@
 <div style="height: 100%" ng-controller="TreeTableDemoController">
     <div ebp-treetable="treeTableSettings">
-        <div ebp-treetable-col title="计划编辑" index="4">
+        <div ebp-treetable-col title="计划编辑" index="4" width="150">
             <a href title="添加" class="ebp-tt-btn ebp-tt-btn-add"></a>
-            <a href title="编辑" class="ebp-tt-btn ebp-tt-btn-edit"></a>
-            <a href title="删除" class="ebp-tt-btn ebp-tt-btn-delete"></a>
+            <a href title="编辑" class="ebp-tt-btn ebp-tt-btn-edit" ng-click="$node.edit()"></a>
+            <a href title="删除" class="ebp-tt-btn ebp-tt-btn-delete" ng-click="$node.remove()"></a>
         </div>
         <div ebp-treetable-col title="流程操作" index="5">
             <a href title="审批" class="ebp-tt-btn ebp-tt-btn-approval"></a>

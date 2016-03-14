@@ -4,9 +4,14 @@
 export const directiveNames = {
     ebpTreeTable: 'ebpTreetable',
     ebpTreeTableCol: 'ebpTreetableCol',
+    ebpTreeTableNode: 'ebpTreetableNode',
     ebpTreeTableCell: 'ebpTreetableCell'
 };
 
 export const treeTableSettings = {
-    name: '123'
+    colDefs: [],
+    events: {
+        edit: angular.noop,
+        remove: angular.noop
+    }
 };

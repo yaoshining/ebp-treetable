@@ -20,10 +20,18 @@ function CellDirectiveFactory($compile) {
         restrict: 'AE',
         link: linkFunc,
         scope: false,
-        require: `^${directiveNames.ebpTreeTable}`
+        require: `^${directiveNames.ebpTreeTableNode}`,
+        controller: EbpTreeTableCellController,
+        controllerAs: '$cell'
     };
 
     return directive;
+}
+
+class EbpTreeTableCellController {
+    constructor() {
+
+    }
 }
 
 export default CellDirectiveFactory;

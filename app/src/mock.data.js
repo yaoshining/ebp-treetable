@@ -3,7 +3,7 @@
  */
 'use strict';
 Mock.mock('http://a.cn', {
-    'list|20-100': [{
+    'list|1000-1500': [{
         'id|+1': 1,
         'name': '@ctitle',
         'details': '@csentence',

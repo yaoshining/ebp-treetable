@@ -17,7 +17,7 @@ function TreeTableDirectiveFactory($templateRequest, $compile) {
     function compileFunc() {
         let tplLoader = $templateRequest('src/treeTable/templates/treeTable.tpl.html');
         return {
-            post: (scope, elem) => {
+            post: (scope, elem, attrs, treeTable) => {
                 elem.addClass('ebp-tt-container');
                 tplLoader.then((tpl) => {
                     elem.append($compile(tpl)(scope));
@@ -29,27 +29,16 @@ function TreeTableDirectiveFactory($templateRequest, $compile) {
                         elem.find('table').width('100%');
                     }
                     initScroller(contentWrapper, headerWrapper);
-                });
-                let popover = angular.element('<div>').addClass('ebp-tt-popover').text('添加');
-                elem.on('mouseover', (event) => {
-                    if($(event.target).parents().addBack().is('.ebp-tt-btn')) {
-                        $(event.target).closest('.ebp-tt-btn').append(popover);
-                    }
-                });
-                elem.on('mouseout', (event) => {
-                    if($(event.target).parents().addBack().is('.ebp-tt-btn')) {
-
-                    }
+                    treeTable.render();
                 });
             }
         };
-    }
+}
 
     let directive = {
         restrict: 'AE',
         compile: compileFunc,
         scope: true,
-        //templateUrl: 'src/treeTable/templates/treeTable.tpl.html',
         controller: TreeTableController,
         controllerAs: '$ebpTreeTable'
     };
@@ -61,17 +50,74 @@ function initSettings(settings) {
     this.colDefs = _.sortBy(settings.colDefs || [], function(col) {
         return col.index;
     });
+    this.events = settings.events;
+}
+
+function initTreeTable($element, $templateRequest, $compile, $scope, $controller) {
+    let wrapper = $element.find('.ebp-tt-content-wrapper');
+    let tbody = wrapper.find('tbody');
+    let tplLoader = $templateRequest('src/treeTable/templates/row.tpl.html');
+    tplLoader.then((tpl) => {
+        let compiled = _.template(tpl);
+        angular.forEach(this.data, (e, i) => {
+            let el = $(compiled({
+                index: i,
+                node: e
+            }));
+            let scope = $scope.$new();
+            scope.node = e;
+            initCell(el, this.colDefs, e);
+            tbody.append($compile(el)(scope));
+        });
+    });
+
+    function initCell(el, colDefs, node) {
+        angular.forEach(colDefs, (col) => {
+            let compiled = _.template(`<td><%- node[col.name]%></td>`);
+            let elem = $(compiled({
+                node,
+                col
+            }));
+            if(col.tpl) {
+                let contentEl = angular.element('<div>').html(col.tpl);
+                elem.html(contentEl);
+                elem.addClass('ebp-tt-func-cell');
+            }
+            el.append(elem);
+        });
+    }
 }
 
 class TreeTableController {
 
-    constructor($scope, $attrs, $resource, defaultSettings) {
+    constructor($scope, $attrs, defaultSettings, $element, $injector) {
         'ngInject';
         let settings = $scope.$eval($attrs[directiveNames.ebpTreeTable]);
-        settings = _.extend(defaultSettings, settings);
+        settings = _.merge({}, defaultSettings, settings);
         initSettings.apply(this, [settings]);
-        let Resource = $resource('/data/1.json');
-        this.data = Resource.query();
+
+        this.remove = (node) => {
+            _.remove(this.data, (item) => {
+                return item.id === node.id;
+            });
+        };
+
+        this.render = () => {
+            $.getJSON('/data/2.json', (data) => {
+                this.data = data;
+                $injector.invoke(initTreeTable, this, {
+                    $element,
+                    $scope
+                });
+            });
+        };
+
+        this.reIndex = () => {
+            let elems = $element.find('[ebp-treetable-node]');
+            elems.each((i, e) => {
+                $(e).find('.ebp-tt-index-cell').text(i+1);
+            });
+        };
     }
 
 }

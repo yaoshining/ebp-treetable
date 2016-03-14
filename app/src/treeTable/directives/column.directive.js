@@ -11,6 +11,7 @@ function ColumnDirectiveFactory() {
         let colDef = {
             title: attrs.title,
             index: attrs.index,
+            width: attrs.width,
             tpl
         };
         let sortedIndex = _.sortedIndexBy(treeTable.colDefs, colDef, 'index');
