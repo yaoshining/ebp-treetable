@@ -28,7 +28,8 @@ class TreeTableDemoController {
             }, {
                 name: 'progress',
                 title: '进度',
-                index: 8
+                index: 8,
+                type: 'progressBar'
             }],
             events: {
                 edit: function(node, callback) {

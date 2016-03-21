@@ -1,8 +1,6 @@
 /**
  * Created by yaoshining on 16/3/14.
  */
-import {directiveNames} from '../config';
-
 
 function linkFunc() {
 

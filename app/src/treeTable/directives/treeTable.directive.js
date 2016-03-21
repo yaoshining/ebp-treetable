@@ -53,7 +53,7 @@ function initSettings(settings) {
     this.events = settings.events;
 }
 
-function initTreeTable($element, $templateRequest, $compile, $scope, $controller) {
+function initTreeTable($element, $templateRequest, $compile, $scope) {
     let wrapper = $element.find('.ebp-tt-content-wrapper');
     let tbody = wrapper.find('tbody');
     let tplLoader = $templateRequest('src/treeTable/templates/row.tpl.html');
@@ -78,10 +78,19 @@ function initTreeTable($element, $templateRequest, $compile, $scope, $controller
                 node,
                 col
             }));
+            let value = node[col.name];
             if(col.tpl) {
                 let contentEl = angular.element('<div>').html(col.tpl);
                 elem.html(contentEl);
                 elem.addClass('ebp-tt-func-cell');
+            } else {
+                if(col.type === 'progressBar') {
+                    elem.html(`<div class="ebp-tt-progressbar">
+                        <div class="ebp-tt-progressbar-inner" value="${value}">
+                        </div>
+                    </div>`);
+                    elem.addClass('ebp-tt-comp-cell');
+                }
             }
             el.append(elem);
         });
