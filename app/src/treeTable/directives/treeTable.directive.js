@@ -53,48 +53,16 @@ function initSettings(settings) {
     this.events = settings.events;
 }
 
-function initTreeTable($element, $templateRequest, $compile, $scope) {
+function initTreeTable($element, $compile, $scope) {
     let wrapper = $element.find('.ebp-tt-content-wrapper');
     let tbody = wrapper.find('tbody');
-    let tplLoader = $templateRequest('src/treeTable/templates/row.tpl.html');
-    tplLoader.then((tpl) => {
-        let compiled = _.template(tpl);
-        angular.forEach(this.data, (e, i) => {
-            let el = $(compiled({
-                index: i,
-                node: e
-            }));
-            let scope = $scope.$new();
-            scope.node = e;
-            initCell(el, this.colDefs, e);
-            tbody.append($compile(el)(scope));
-        });
+    let compiled = _.template('<tr ebp-treetable-node></tr>');
+    angular.forEach(this.data, (e) => {
+        let el = $(compiled());
+        let scope = $scope.$new();
+        scope.node = e;
+        tbody.append($compile(el)(scope));
     });
-
-    function initCell(el, colDefs, node) {
-        angular.forEach(colDefs, (col) => {
-            let compiled = _.template(`<td><%- node[col.name]%></td>`);
-            let elem = $(compiled({
-                node,
-                col
-            }));
-            let value = node[col.name];
-            if(col.tpl) {
-                let contentEl = angular.element('<div>').html(col.tpl);
-                elem.html(contentEl);
-                elem.addClass('ebp-tt-func-cell');
-            } else {
-                if(col.type === 'progressBar') {
-                    elem.html(`<div class="ebp-tt-progressbar">
-                        <div class="ebp-tt-progressbar-inner" value="${value}">
-                        </div>
-                    </div>`);
-                    elem.addClass('ebp-tt-comp-cell');
-                }
-            }
-            el.append(elem);
-        });
-    }
 }
 
 class TreeTableController {

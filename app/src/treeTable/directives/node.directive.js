@@ -18,16 +18,30 @@ function NodeDirectiveFactory() {
     return directive;
 }
 
-function initNode($scope, $element) {
+function initNode($scope, $element, $templateRequest, $compile) {
     'ngInject';
     let node = $scope.node;
     let treeTable = $scope.$ebpTreeTable;
     let events = treeTable.events;
+    let tplLoader = $templateRequest('src/treeTable/templates/row.tpl.html');
+    this.render = () => {
+        tplLoader.then((tpl) => {
+            let compiled = _.template(tpl);
+            let el = $(compiled({
+                index: $element.index(),
+                node
+            }));
+            $element.html(el);
+            renderCell($element, treeTable.colDefs, node, $compile, $scope);
+        });
+    };
+    this.render();
     this.edit = () => {
-        function callback(data) {
+        let callback = (data) => {
             _.merge(node, data);
             $scope.$apply();
-        }
+            this.render();
+        };
         events.edit(angular.copy(node, {}), callback);
     };
     this.remove = () => {
@@ -42,6 +56,60 @@ function initNode($scope, $element) {
             }
         }
     };
+}
+
+function renderCell(el, colDefs, node, $compile, $scope) {
+    angular.forEach(colDefs, (col) => {
+        let compiled = _.template(`<td><%- node[col.name]%></td>`);
+        let elem = $(compiled({
+            node,
+            col
+        }));
+        let value = node[col.name];
+        if(col.tpl) {
+            let contentEl = angular.element('<div>').html(col.tpl);
+            elem.html(contentEl);
+            $compile(contentEl)($scope);
+            elem.addClass('ebp-tt-func-cell');
+        } else {
+            if(col.type === 'progressBar') {
+                initProgressBar(elem, {
+                    value
+                });
+                elem.addClass('ebp-tt-comp-cell');
+            }
+        }
+        el.append(elem);
+    });
+}
+
+function initProgressBar(cell, settings) {
+    let progressbar = new EbpTreeTableProgressbar(settings);
+    cell.html(progressbar.el);
+}
+
+class EbpTreeTableProgressbar {
+    constructor(settings) {
+        this.el = $(`<div class="ebp-tt-progressbar">
+                    </div>`);
+        this.bar = $(`<div class="ebp-tt-progressbar-inner">
+                        </div>`);
+        this.el.append(this.bar);
+        this.value = settings.value;
+        this.render();
+    }
+
+    render() {
+        if(this.value > 0) {
+            this.bar.show();
+        } else {
+            this.bar.hide();
+        }
+        setTimeout(() => {
+            this.bar.width(this.value + '%');
+        }, 0);
+    }
+
 }
 
 class EbpTreeTableNodeController {
