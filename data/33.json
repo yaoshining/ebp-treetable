@@ -1,0 +1,36 @@
+[{
+  "id": 39,
+  "name": "总体方案设计",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 37,
+  "parentId": 33,
+  "isParent": true
+}, {
+  "id": 40,
+  "name": "各分系统研制任务书设计",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 48,
+  "parentId": 33,
+  "isParent": true
+}, {
+  "id": 41,
+  "name": "车辆综合信息系统",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 28,
+  "parentId": 33
+}, {
+  "id": 42,
+  "name": "总体工程设计",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 89,
+  "parentId": 33,
+  "isParent": true
+}]

@@ -1,0 +1,50 @@
+[{
+  "id": 33,
+  "name": "设计阶段",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 62,
+  "parentId": 21,
+  "isParent": true
+},{
+  "id": 34,
+  "name": "试验阶段",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 6,
+  "parentId": 21
+},{
+  "id": 35,
+  "name": "工厂鉴定试验",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 72,
+  "parentId": 21
+},{
+  "id": 36,
+  "name": "初样车交付军方",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 44,
+  "parentId": 21
+},{
+  "id": 37,
+  "name": "试验",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 58,
+  "parentId": 21
+}, {
+  "id": 38,
+  "name": "转段评审",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 64,
+  "parentId": 21
+}]

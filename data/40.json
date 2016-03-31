@@ -1,0 +1,49 @@
+[{
+  "id": 47,
+  "name": "推进系统研制任务书设计",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 48,
+  "parentId": 40
+}, {
+  "id": 48,
+  "name": "武器系统研制任务书设计",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 95,
+  "parentId": 40
+}, {
+  "id": 49,
+  "name": "车辆综合电子系统研制任务书设计",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 96,
+  "parentId": 40
+}, {
+  "id": 50,
+  "name": "综合防护系统研制任务书设计",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 31,
+  "parentId": 40
+}, {
+  "id": 51,
+  "name": "电源电器系统研制任务书设计",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 93,
+  "parentId": 40
+}, {
+  "id": 52,
+  "name": "试制",
+  "details": "详情1",
+  "startTime": "2016-05-06",
+  "endTime": "2016-05-06",
+  "progress": 47,
+  "parentId": 40
+}]

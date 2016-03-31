@@ -3,15 +3,17 @@
         <table>
             <colgroup>
                 <col class="ebp-tt-index-col"/>
-                <col/>
+                <col class="ebp-tt-level-col" />
                 <col ng-repeat="col in $ebpTreeTable.colDefs" ng-style="{width: col.width+'px'}" />
             </colgroup>
             <thead>
             <tr>
                 <th class="columnheader ebp-tt-index-cell"></th>
-                <th class="columnheader">编号</th>
+                <th class="columnheader ebp-tt-level-cell">
+                    <div>编号</div>
+                </th>
                 <th class="columnheader" ng-repeat="col in $ebpTreeTable.colDefs">
-                    {{col.title}}
+                    <div>{{col.title}}</div>
                 </th>
             </tr>
             </thead>
@@ -22,11 +24,11 @@
     <table>
         <colgroup>
             <col class="ebp-tt-index-col"/>
-            <col/>
+            <col class="ebp-tt-level-col" />
             <col ng-repeat="col in $ebpTreeTable.colDefs" ng-style="{width: col.width+'px'}" />
         </colgroup>
         <tbody>
         </tbody>
     </table>
 </div>
-<div class="ebp-tt-resize-mark"></div>
+<div class="ebp-tt-resize-mark" ng-style="$ebpTreeTable.resizeMark"></div>

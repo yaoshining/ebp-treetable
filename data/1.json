@@ -1,113 +1,27 @@
 [{
-  "id": 1,
-  "name": "名称1",
+  "id": 17,
+  "name": "初样阶段",
   "details": "详情1",
   "startTime": "2016-05-06",
   "endTime": "2016-05-06",
-  "progress": 12
+  "progress": 43,
+  "parentId": 1,
+  "isParent": true
 },{
-  "id": 2,
-  "name": "名称1",
+  "id": 18,
+  "name": "正样阶段",
   "details": "详情1",
   "startTime": "2016-05-06",
   "endTime": "2016-05-06",
-  "progress": 12
+  "progress": 73,
+  "parentId": 1,
+  "isParent": true
 },{
-  "id": 3,
-  "name": "名称1",
+  "id": 19,
+  "name": "设计定型阶段",
   "details": "详情1",
   "startTime": "2016-05-06",
   "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 4,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 5,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 6,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 7,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 8,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 9,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 10,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 11,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 12,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 13,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 14,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 15,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
-},{
-  "id": 16,
-  "name": "名称1",
-  "details": "详情1",
-  "startTime": "2016-05-06",
-  "endTime": "2016-05-06",
-  "progress": 12
+  "progress": 12,
+  "parentId": 1
 }]

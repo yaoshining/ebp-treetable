@@ -5,13 +5,19 @@ export const directiveNames = {
     ebpTreeTable: 'ebpTreetable',
     ebpTreeTableCol: 'ebpTreetableCol',
     ebpTreeTableNode: 'ebpTreetableNode',
-    ebpTreeTableCell: 'ebpTreetableCell'
+    ebpTreeTableCell: 'ebpTreetableCell',
+    ebpTreeTableHeader: 'columnheader'
 };
 
 export const treeTableSettings = {
     colDefs: [],
     events: {
         edit: angular.noop,
-        remove: angular.noop
+        remove: angular.noop,
+        add: angular.noop
+    },
+    dataSource: {
+        read: null,
+        drop: null
     }
 };
