@@ -14,7 +14,7 @@ function ColumnDirectiveFactory() {
             width: attrs.width,
             tpl
         };
-        let sortedIndex = _.sortedIndexBy(treeTable.colDefs, colDef, 'index');
+        let sortedIndex = _.sortedIndex(treeTable.colDefs, colDef.index);
         treeTable.colDefs.splice(sortedIndex, 0, colDef);
         elem.remove();
     }

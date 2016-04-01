@@ -770,7 +770,7 @@
 	                width: attrs.width,
 	                tpl: tpl
 	            };
-	            var sortedIndex = _.sortedIndexBy(treeTable.colDefs, colDef, 'index');
+	            var sortedIndex = _.sortedIndex(treeTable.colDefs, colDef.index);
 	            treeTable.colDefs.splice(sortedIndex, 0, colDef);
 	            elem.remove();
 	        }
