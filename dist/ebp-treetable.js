@@ -1317,12 +1317,6 @@
 	        value: true
 	    });
 
-	    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-	        return typeof obj;
-	    } : function (obj) {
-	        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
-	    };
-
 	    function linkFunc(scope, elem) {
 	        var _this = this;
 
@@ -1331,12 +1325,11 @@
 	        var events = treeTable.events;
 	        var resizeMark = treeTable.resizeMark;
 	        var col = scope.col;
-	        if (!interact) {
+	        if (typeof interact === 'undefined') {
 	            if (angular.isFunction(requirejs)) {
 	                window.interact = requirejs('interact');
 	            }
 	        }
-	        console.log(typeof requirejs === 'undefined' ? 'undefined' : _typeof(requirejs));
 	        interact(elem[0]).resizable({
 	            preserveAspectRatio: true,
 	            edges: {
@@ -1407,7 +1400,10 @@
 	                })();
 	            }
 	        }
-	    }
+	    } /**
+	       * Created by yaoshining on 16/3/23.
+	       */
+
 
 	    function HeaderDirectiveFactory() {
 	        var directive = {
@@ -1424,5 +1420,5 @@
 
 /***/ }
 /******/ ]);
-angular.module("ebp.treetable").run(["$templateCache", function($templateCache) {$templateCache.put("src/treeTable/templates/row.tpl.html","<td class=\"ebp-tt-index-cell\"><%- index+1%></td><td class=\"ebp-tt-level-cell\"><%- levelnum%></td>");
+angular.module("ebp.treetable").run(["$templateCache", function($templateCache) {$templateCache.put("src/treeTable/templates/row.tpl.html","<td class=\"ebp-tt-index-cell\"><%- index+1%></td><td class=\"ebp-tt-level-cell\"><%- levelNum%></td>");
 $templateCache.put("src/treeTable/templates/treeTable.tpl.html","<div class=\"ebp-tt-header\"><div class=\"ebp-tt-header-wrapper\"><table><colgroup><col class=\"ebp-tt-index-col\"><col class=\"ebp-tt-level-col\"><col ng-repeat=\"col in $ebpTreeTable.colDefs\" ng-style=\"{width: col.width+\'px\'}\"></colgroup><thead><tr><th class=\"columnheader ebp-tt-index-cell\"></th><th class=\"columnheader ebp-tt-level-cell\"><div>编号</div></th><th class=\"columnheader\" ng-repeat=\"col in $ebpTreeTable.colDefs\"><div>{{col.title}}</div></th></tr></thead></table></div></div><div class=\"ebp-tt-content-wrapper\"><table><colgroup><col class=\"ebp-tt-index-col\"><col class=\"ebp-tt-level-col\"><col ng-repeat=\"col in $ebpTreeTable.colDefs\" ng-style=\"{width: col.width+\'px\'}\"></colgroup><tbody></tbody></table></div><div class=\"ebp-tt-resize-mark\" ng-style=\"$ebpTreeTable.resizeMark\"></div>");}]);

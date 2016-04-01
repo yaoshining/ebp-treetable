@@ -8,12 +8,11 @@ function linkFunc(scope, elem) {
     let events = treeTable.events;
     let resizeMark = treeTable.resizeMark;
     let col = scope.col;
-    if(!interact) {
+    if(typeof interact === 'undefined') {
         if(angular.isFunction(requirejs)) {
             window.interact = requirejs('interact');
         }
     }
-    console.log(typeof requirejs);
     interact(elem[0]).resizable({
         preserveAspectRatio: true,
         edges: {
