@@ -14,7 +14,9 @@ function ColumnDirectiveFactory() {
             width: attrs.width,
             tpl
         };
-        let sortedIndex = _.sortedIndex(treeTable.colDefs, colDef.index);
+        let sortedIndex = _.sortedIndex(_.map(treeTable.colDefs, (col) => {
+            return col.index;
+        }), colDef.index);
         treeTable.colDefs.splice(sortedIndex, 0, colDef);
         elem.remove();
     }
