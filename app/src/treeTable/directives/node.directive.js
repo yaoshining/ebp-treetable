@@ -18,32 +18,31 @@ function NodeDirectiveFactory() {
     return directive;
 }
 
-function initNode($scope, $element, $templateRequest, $compile) {
+function initNode($scope, $element, $compile, $timeout) {
     'ngInject';
     let node = $scope.node;
     let treeTable = $scope.$ebpTreeTable;
     let events = treeTable.events;
-    let tplLoader = $templateRequest('src/treeTable/templates/row.tpl.html');
     this.render = () => {
-        tplLoader.then((tpl) => {
-            let levelNum = this.levelNum;
-            let compiled = _.template(tpl);
-            let el = $(compiled({
-                index: $element.index(),
-                node,
-                levelNum
-            }));
-            $element.html(el);
-            renderCell.apply(this, [
-                $element,
-                treeTable,
-                node,
-                $compile,
-                $scope
-            ]);
-        });
+        let tpl = `<td class="ebp-tt-index-cell"><%- index+1%></td>
+                   <td class="ebp-tt-level-cell"><%- levelNum%></td>`;
+        let levelNum = this.levelNum;
+        let compiled = _.template(tpl);
+        let el = $(compiled({
+            index: $element.index(),
+            node,
+            levelNum
+        }));
+        $element.html(el);
+        renderCell.apply(this, [
+            $element,
+            treeTable,
+            node,
+            $compile,
+            $scope
+        ]);
     };
-    this.render();
+    $timeout(this.render, 0);
     this.edit = () => {
         let callback = (data) => {
             _.merge(node, data);
@@ -374,7 +373,15 @@ class EbpTreeTableNodeController {
         });
         if($scope.$parent.$node) {
             this.$parent.$children = this.$parent.$children || [];
-            this.$parent.$children.push(this);
+            let index = $element.data('index');
+            if(angular.isUndefined(index)) {
+                index = this.$parent.$children.length;
+            } else {
+                setTimeout(() => {
+                    this.$parent.refreshLevelNum();
+                }, 0);
+            }
+            this.$parent.$children.splice(index, 0, this);
             this.$parent.isParent = true;
         }
         if($scope.level === 1) {

@@ -81,11 +81,11 @@ function initTreeTable($element, $compile, $scope) {
     };
 }
 
-function nodesGenerator(data, $scope, $compile, level) {
+function nodesGenerator(data, $scope, $compile, level, index) {
     let compiled = _.template('<tr ebp-treetable-node></tr>');
     let elems = $();
     angular.forEach(data, (e) => {
-        let el = $(compiled());
+        let el = $(compiled()).data('index', index);
         let scope = $scope.$new();
         scope.node = e;
         scope.level = level;
@@ -183,7 +183,7 @@ class TreeTableController {
                 level = node.$level + 1;
                 node.isParent = true;
             }
-            let elems = nodesGenerator(childData, scope, $compile, level);
+            let elems = nodesGenerator(childData, scope, $compile, level, position);
             let prevElem = $element.find(`[ebp-treetable-node]:eq(${index})`);
             if(node) {
                 elems.insertAfter(prevElem);
