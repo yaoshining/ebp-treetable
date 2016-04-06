@@ -619,11 +619,11 @@
 	        };
 	    }
 
-	    function nodesGenerator(data, $scope, $compile, level) {
+	    function nodesGenerator(data, $scope, $compile, level, index) {
 	        var compiled = _.template('<tr ebp-treetable-node></tr>');
 	        var elems = $();
 	        angular.forEach(data, function (e) {
-	            var el = $(compiled());
+	            var el = $(compiled()).data('index', index);
 	            var scope = $scope.$new();
 	            scope.node = e;
 	            scope.level = level;
@@ -734,7 +734,7 @@
 	                level = node.$level + 1;
 	                node.isParent = true;
 	            }
-	            var elems = nodesGenerator(childData, scope, $compile, level);
+	            var elems = nodesGenerator(childData, scope, $compile, level, position);
 	            var prevElem = $element.find('[ebp-treetable-node]:eq(' + index + ')');
 	            if (node) {
 	                elems.insertAfter(prevElem);
@@ -770,7 +770,9 @@
 	                width: attrs.width,
 	                tpl: tpl
 	            };
-	            var sortedIndex = _.sortedIndex(treeTable.colDefs, colDef.index);
+	            var sortedIndex = _.sortedIndex(_.map(treeTable.colDefs, function (col) {
+	                return col.index;
+	            }), colDef.index);
 	            treeTable.colDefs.splice(sortedIndex, 0, colDef);
 	            elem.remove();
 	        }
@@ -905,7 +907,7 @@
 	        return directive;
 	    }
 
-	    function initNode($scope, $element, $templateRequest, $compile) {
+	    function initNode($scope, $element, $compile, $timeout) {
 	        'ngInject';
 
 	        var _this = this;
@@ -913,21 +915,19 @@
 	        var node = $scope.node;
 	        var treeTable = $scope.$ebpTreeTable;
 	        var events = treeTable.events;
-	        var tplLoader = $templateRequest('src/treeTable/templates/row.tpl.html');
 	        this.render = function () {
-	            tplLoader.then(function (tpl) {
-	                var levelNum = _this.levelNum;
-	                var compiled = _.template(tpl);
-	                var el = $(compiled({
-	                    index: $element.index(),
-	                    node: node,
-	                    levelNum: levelNum
-	                }));
-	                $element.html(el);
-	                renderCell.apply(_this, [$element, treeTable, node, $compile, $scope]);
-	            });
+	            var tpl = '<td class="ebp-tt-index-cell"><%- index+1%></td>\n                   <td class="ebp-tt-level-cell"><%- levelNum%></td>';
+	            var levelNum = _this.levelNum;
+	            var compiled = _.template(tpl);
+	            var el = $(compiled({
+	                index: $element.index(),
+	                node: node,
+	                levelNum: levelNum
+	            }));
+	            $element.html(el);
+	            renderCell.apply(_this, [$element, treeTable, node, $compile, $scope]);
 	        };
-	        this.render();
+	        $timeout(this.render, 0);
 	        this.edit = function () {
 	            var callback = function callback(data) {
 	                _.merge(node, data);
@@ -1276,7 +1276,15 @@
 	        });
 	        if ($scope.$parent.$node) {
 	            this.$parent.$children = this.$parent.$children || [];
-	            this.$parent.$children.push(this);
+	            var index = $element.data('index');
+	            if (angular.isUndefined(index)) {
+	                index = this.$parent.$children.length;
+	            } else {
+	                setTimeout(function () {
+	                    _this4.$parent.refreshLevelNum();
+	                }, 0);
+	            }
+	            this.$parent.$children.splice(index, 0, this);
 	            this.$parent.isParent = true;
 	        }
 	        if ($scope.level === 1) {
@@ -1420,5 +1428,4 @@
 
 /***/ }
 /******/ ]);
-angular.module("ebp.treetable").run(["$templateCache", function($templateCache) {$templateCache.put("src/treeTable/templates/row.tpl.html","<td class=\"ebp-tt-index-cell\"><%- index+1%></td><td class=\"ebp-tt-level-cell\"><%- levelNum%></td>");
-$templateCache.put("src/treeTable/templates/treeTable.tpl.html","<div class=\"ebp-tt-header\"><div class=\"ebp-tt-header-wrapper\"><table><colgroup><col class=\"ebp-tt-index-col\"><col class=\"ebp-tt-level-col\"><col ng-repeat=\"col in $ebpTreeTable.colDefs\" ng-style=\"{width: col.width+\'px\'}\"></colgroup><thead><tr><th class=\"columnheader ebp-tt-index-cell\"></th><th class=\"columnheader ebp-tt-level-cell\"><div>编号</div></th><th class=\"columnheader\" ng-repeat=\"col in $ebpTreeTable.colDefs\"><div>{{col.title}}</div></th></tr></thead></table></div></div><div class=\"ebp-tt-content-wrapper\"><table><colgroup><col class=\"ebp-tt-index-col\"><col class=\"ebp-tt-level-col\"><col ng-repeat=\"col in $ebpTreeTable.colDefs\" ng-style=\"{width: col.width+\'px\'}\"></colgroup><tbody></tbody></table></div><div class=\"ebp-tt-resize-mark\" ng-style=\"$ebpTreeTable.resizeMark\"></div>");}]);
+angular.module("ebp.treetable").run(["$templateCache", function($templateCache) {$templateCache.put("src/treeTable/templates/treeTable.tpl.html","<div class=\"ebp-tt-header\"><div class=\"ebp-tt-header-wrapper\"><table><colgroup><col class=\"ebp-tt-index-col\"><col class=\"ebp-tt-level-col\"><col ng-repeat=\"col in $ebpTreeTable.colDefs\" ng-style=\"{width: col.width+\'px\'}\"></colgroup><thead><tr><th class=\"columnheader ebp-tt-index-cell\"></th><th class=\"columnheader ebp-tt-level-cell\"><div>编号</div></th><th class=\"columnheader\" ng-repeat=\"col in $ebpTreeTable.colDefs\"><div>{{col.title}}</div></th></tr></thead></table></div></div><div class=\"ebp-tt-content-wrapper\"><table><colgroup><col class=\"ebp-tt-index-col\"><col class=\"ebp-tt-level-col\"><col ng-repeat=\"col in $ebpTreeTable.colDefs\" ng-style=\"{width: col.width+\'px\'}\"></colgroup><tbody></tbody></table></div><div class=\"ebp-tt-resize-mark\" ng-style=\"$ebpTreeTable.resizeMark\"></div>");}]);
