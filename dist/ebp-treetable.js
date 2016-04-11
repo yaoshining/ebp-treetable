@@ -1074,6 +1074,9 @@
 	                var contentEl = angular.element('<div>').html(col.tpl);
 	                elem.html(contentEl);
 	                $compile(contentEl)($scope);
+	                $('.fa', contentEl).click(function (event) {
+	                    return event.stopPropagation();
+	                });
 	                elem.addClass('ebp-tt-func-cell');
 	            } else {
 	                if (col.type === 'progressBar') {

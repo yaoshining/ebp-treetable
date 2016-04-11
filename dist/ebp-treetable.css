@@ -79,6 +79,12 @@
         border-bottom-color: #ccc;
         text-align: center;
         font-size: 12px; }
+      .ebp-tt-content-wrapper table td .fa {
+        color: inherit;
+        text-decoration: none;
+        font-size: 1.6em;
+        text-align: center;
+        margin: 5px; }
     .ebp-tt-content-wrapper table tr:last-child > td {
       border-bottom: none; }
     .ebp-tt-content-wrapper table tr:nth-child(odd) > td {
