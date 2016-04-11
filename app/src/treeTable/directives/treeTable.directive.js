@@ -59,9 +59,9 @@ function initDataSource($resource, settings) {
     if(dataSource.read) {
         this.$readRepo = $resource(dataSource.read.url, dataSource.read.params);
     }
-    if(dataSource.drop) {
-        this.$dropRepo = $resource(dataSource.drop.url, dataSource.drop.params);
-    }
+    // if(dataSource.drop) {
+    //     this.$dropRepo = $resource(dataSource.drop.url, dataSource.drop.params);
+    // }
 }
 
 function initTreeTable($element, $compile, $scope) {

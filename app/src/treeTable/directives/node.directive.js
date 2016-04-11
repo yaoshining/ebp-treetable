@@ -52,10 +52,7 @@ function initNode($scope, $element, $compile, $timeout) {
         events.edit(angular.copy(node, {}), callback);
     };
     this.remove = () => {
-        if(!confirm("确定删除此条记录以及所有子记录吗?")) {
-            return;
-        }
-        let callback = () => {
+        events.remove(node, () => {
             let result = _.remove(treeTable.data, (item) => {
                 return item.id === node.id;
             });
@@ -73,8 +70,7 @@ function initNode($scope, $element, $compile, $timeout) {
                 this.$destroy();
                 treeTable.reIndex();
             }
-        };
-        events.remove(node, callback);
+        });
         // treeTable.$dropRepo.remove({
         //     id: node.id
         // }, () => {

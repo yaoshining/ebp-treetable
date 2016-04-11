@@ -595,9 +595,9 @@
 	        if (dataSource.read) {
 	            this.$readRepo = $resource(dataSource.read.url, dataSource.read.params);
 	        }
-	        if (dataSource.drop) {
-	            this.$dropRepo = $resource(dataSource.drop.url, dataSource.drop.params);
-	        }
+	        // if(dataSource.drop) {
+	        //     this.$dropRepo = $resource(dataSource.drop.url, dataSource.drop.params);
+	        // }
 	    }
 
 	    function initTreeTable($element, $compile, $scope) {
@@ -936,10 +936,7 @@
 	            events.edit(angular.copy(node, {}), callback);
 	        };
 	        this.remove = function () {
-	            if (!confirm("确定删除此条记录以及所有子记录吗?")) {
-	                return;
-	            }
-	            var callback = function callback() {
+	            events.remove(node, function () {
 	                var result = _.remove(treeTable.data, function (item) {
 	                    return item.id === node.id;
 	                });
@@ -957,8 +954,7 @@
 	                    _this.$destroy();
 	                    treeTable.reIndex();
 	                }
-	            };
-	            events.remove(node, callback);
+	            });
 	            // treeTable.$dropRepo.remove({
 	            //     id: node.id
 	            // }, () => {
