@@ -519,6 +519,24 @@
 	        value: true
 	    });
 
+	    var _createClass = function () {
+	        function defineProperties(target, props) {
+	            for (var i = 0; i < props.length; i++) {
+	                var descriptor = props[i];
+	                descriptor.enumerable = descriptor.enumerable || false;
+	                descriptor.configurable = true;
+	                if ("value" in descriptor) descriptor.writable = true;
+	                Object.defineProperty(target, descriptor.key, descriptor);
+	            }
+	        }
+
+	        return function (Constructor, protoProps, staticProps) {
+	            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	            if (staticProps) defineProperties(Constructor, staticProps);
+	            return Constructor;
+	        };
+	    }();
+
 	    function _toConsumableArray(arr) {
 	        if (Array.isArray(arr)) {
 	            for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
@@ -595,9 +613,6 @@
 	        if (dataSource.read) {
 	            this.$readRepo = $resource(dataSource.read.url, dataSource.read.params);
 	        }
-	        // if(dataSource.drop) {
-	        //     this.$dropRepo = $resource(dataSource.drop.url, dataSource.drop.params);
-	        // }
 	    }
 
 	    function initTreeTable($element, $compile, $scope) {
@@ -631,20 +646,21 @@
 	        return elems;
 	    }
 
-	    var TreeTableController = function TreeTableController($scope, $attrs, defaultSettings, $element, $injector, $compile) {
+	    var TreeTableController = function TreeTableController($scope, $attrs, defaultSettings, $element, $injector, $compile, $parse) {
 	        'ngInject';
 
 	        var _this = this;
 
 	        _classCallCheck(this, TreeTableController);
 
-	        var settings = $scope.$eval($attrs[_config.directiveNames.ebpTreeTable]);
+	        var settingsModel = $parse($attrs[_config.directiveNames.ebpTreeTable]),
+	            settings = settingsModel.apply(null, [$scope]);
 	        settings = _.merge({}, defaultSettings, settings);
 	        initSettings.apply(this, [settings]);
 	        $injector.invoke(initDataSource, this, {
 	            settings: settings
 	        });
-
+	        settingsModel.assign($scope.$parent, $injector.instantiate(TreeTableAdapter, { treeTable: this }));
 	        var _checkedNodes = [];
 	        this.$children = [];
 	        this.remove = function (node) {
@@ -743,6 +759,31 @@
 	            _this.reIndex();
 	        };
 	    };
+
+	    var TreeTableAdapter = function () {
+	        function TreeTableAdapter(treeTable) {
+	            'ngInject';
+
+	            _classCallCheck(this, TreeTableAdapter);
+
+	            Object.defineProperty(this, 'treeTable', {
+	                get: function get() {
+	                    return treeTable;
+	                }
+	            });
+	        }
+
+	        _createClass(TreeTableAdapter, [{
+	            key: 'checkedNodes',
+	            get: function get() {
+	                return this.treeTable.checkedNodes.map(function (node) {
+	                    return node.data;
+	                });
+	            }
+	        }]);
+
+	        return TreeTableAdapter;
+	    }();
 
 	    exports.default = TreeTableDirectiveFactory;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -852,6 +893,18 @@
 	        value: true
 	    });
 
+	    function _toConsumableArray(arr) {
+	        if (Array.isArray(arr)) {
+	            for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+	                arr2[i] = arr[i];
+	            }
+
+	            return arr2;
+	        } else {
+	            return Array.from(arr);
+	        }
+	    }
+
 	    function _classCallCheck(instance, Constructor) {
 	        if (!(instance instanceof Constructor)) {
 	            throw new TypeError("Cannot call a class as a function");
@@ -875,18 +928,6 @@
 	            return Constructor;
 	        };
 	    }();
-
-	    function _toConsumableArray(arr) {
-	        if (Array.isArray(arr)) {
-	            for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-	                arr2[i] = arr[i];
-	            }
-
-	            return arr2;
-	        } else {
-	            return Array.from(arr);
-	        }
-	    }
 
 	    /**
 	     * Created by yaoshining on 16/3/14.
@@ -928,104 +969,13 @@
 	        };
 	        $timeout(this.render, 0);
 	        this.edit = function () {
-	            var callback = function callback(data) {
-	                _.merge(node, data);
-	                $scope.$apply();
-	                _this.render();
-	            };
-	            events.edit(angular.copy(node, {}), callback);
+	            events.edit(_this.adapter);
 	        };
 	        this.remove = function () {
-	            events.remove(node, function () {
-	                var result = _.remove(treeTable.data, function (item) {
-	                    return item.id === node.id;
-	                });
-	                if (result.length > 0) {
-	                    removeChildren(_this.$children);
-	                    var parent = _this.$parent;
-	                    if (parent) {
-	                        _.remove(parent.$children, function (item) {
-	                            return item === _this;
-	                        });
-	                        parent.refreshLevelNum();
-	                    } else {
-	                        treeTable.refreshLevelNum();
-	                    }
-	                    _this.$destroy();
-	                    treeTable.reIndex();
-	                }
-	            });
-	            // treeTable.$dropRepo.remove({
-	            //     id: node.id
-	            // }, () => {
-	            //     let result = _.remove(treeTable.data, (item) => {
-	            //         return item.id === node.id;
-	            //     });
-	            //     if(result.length > 0) {
-	            //         removeChildren(this.$children);
-	            //         let parent = this.$parent;
-	            //         if(parent) {
-	            //             _.remove(parent.$children, (item) => {
-	            //                 return item === this;
-	            //             });
-	            //             parent.refreshLevelNum();
-	            //         } else {
-	            //             treeTable.refreshLevelNum();
-	            //         }
-	            //         this.$destroy();
-	            //         treeTable.reIndex();
-	            //     }
-	            // }, () => {
-	            //     //only for tests
-	            //     let result = _.remove(treeTable.data, (item) => {
-	            //         return item.id === node.id;
-	            //     });
-	            //     if(result.length > 0) {
-	            //         removeChildren(this.$children);
-	            //         let parent = this.$parent;
-	            //         if(parent) {
-	            //             _.remove(parent.$children, (item) => {
-	            //                 return item === this;
-	            //             });
-	            //             parent.refreshLevelNum();
-	            //         } else {
-	            //             treeTable.refreshLevelNum();
-	            //         }
-	            //         this.$destroy();
-	            //         treeTable.reIndex();
-	            //     }//end
-	            // });
-
-	            function removeChildren(children) {
-	                var subChildren = getSubChildren(children);
-	                angular.forEach(subChildren, function (node) {
-	                    _.remove(treeTable.data, function (item) {
-	                        return item.id === node.data.id;
-	                    });
-	                    node.$destroy();
-	                });
-	                function getSubChildren(children) {
-	                    var nodes = children;
-	                    angular.forEach(children, function (item) {
-	                        if (item.$children) {
-	                            nodes.push.apply(nodes, _toConsumableArray(getSubChildren(item.$children)));
-	                        }
-	                    });
-	                    return nodes;
-	                }
-	            }
+	            events.remove(_this.adapter);
 	        };
 
 	        this.add = function () {
-
-	            var callback = function callback(index, newNode) {
-	                if (!newNode || _this.$children && index >= _this.$children.length) {
-	                    return;
-	                }
-	                treeTable.add(index, _this, newNode);
-	                _this.checked = false;
-	            };
-
 	            if (node.isParent) {
 	                if (_this.loaded) {
 	                    (function () {
@@ -1033,15 +983,15 @@
 	                        angular.forEach(_this.$children, function (child) {
 	                            children.push(child.data);
 	                        });
-	                        events.add(node, children, callback);
+	                        events.add(_this.adapter, children);
 	                    })();
 	                } else {
 	                    treeTable.retrieve(_this).$promise.then(function (data) {
-	                        events.add(node, data, callback);
+	                        events.add(_this.adapter, data);
 	                    });
 	                }
 	            } else {
-	                events.add(node, null, callback);
+	                events.add(_this.adapter, null);
 	            }
 	            _this.$el.addClass('open');
 	        };
@@ -1069,8 +1019,10 @@
 	            if (col.tpl) {
 	                var contentEl = angular.element('<div>').html(col.tpl);
 	                elem.html(contentEl);
-	                $compile(contentEl)($scope);
-	                $('.fa', contentEl).click(function (event) {
+	                var scope = $scope.$new();
+	                scope.$node = _this2.adapter;
+	                $compile(contentEl)(scope);
+	                $('.fa, .ebp-tt-btn', contentEl).click(function (event) {
 	                    return event.stopPropagation();
 	                });
 	                elem.addClass('ebp-tt-func-cell');
@@ -1219,6 +1171,7 @@
 	            $element: $element
 	        });
 	        this.$el = $element;
+	        var adapter = $injector.instantiate(TreeTableNodeAdapter, { $node: this, $scope: $scope });
 	        Object.defineProperties(this, {
 	            data: {
 	                get: function get() {
@@ -1292,6 +1245,11 @@
 	                        checkboxes.prop('checked', false);
 	                    }
 	                }
+	            },
+	            adapter: {
+	                get: function get() {
+	                    return adapter;
+	                }
 	            }
 	        });
 	        if ($scope.$parent.$node) {
@@ -1329,6 +1287,77 @@
 	                _this4.$parent.checked = _.every(_this4.$parent.$children, 'checked');
 	            }
 	        });
+
+	        this.removeChildren = function () {
+	            var children = _this4.$children;
+	            var subChildren = getSubChildren(children);
+	            angular.forEach(subChildren, function (node) {
+	                _.remove(treeTable.data, function (item) {
+	                    return item.id === node.data.id;
+	                });
+	                node.$destroy();
+	            });
+	            function getSubChildren(children) {
+	                var nodes = children;
+	                angular.forEach(children, function (item) {
+	                    if (item.$children) {
+	                        nodes.push.apply(nodes, _toConsumableArray(getSubChildren(item.$children)));
+	                    }
+	                });
+	                return nodes;
+	            }
+	        };
+	    };
+
+	    var TreeTableNodeAdapter = function TreeTableNodeAdapter($node, $scope) {
+	        'ngInject';
+
+	        var _this5 = this;
+
+	        _classCallCheck(this, TreeTableNodeAdapter);
+
+	        var treeTable = $scope.$ebpTreeTable;
+	        Object.defineProperties(this, {
+	            model: {
+	                get: function get() {
+	                    return $node.data;
+	                }
+	            }
+	        });
+
+	        this.update = function (data) {
+	            _.merge(_this5.model, data);
+	            $node.render();
+	            $scope.$apply();
+	        };
+
+	        this.insert = function (index, newNode) {
+	            if (!newNode || $node.$children && index >= $node.$children.length) {
+	                return;
+	            }
+	            treeTable.add(index, $node, newNode);
+	            _this5.checked = false;
+	        };
+
+	        this.remove = function () {
+	            var result = _.remove(treeTable.data, function (item) {
+	                return item.id === _this5.model.id;
+	            });
+	            if (result.length > 0) {
+	                $node.removeChildren();
+	                var parent = $node.$parent;
+	                if (parent) {
+	                    _.remove(parent.$children, function (item) {
+	                        return item === $node;
+	                    });
+	                    parent.refreshLevelNum();
+	                } else {
+	                    treeTable.refreshLevelNum();
+	                }
+	                $node.$destroy();
+	                treeTable.reIndex();
+	            }
+	        };
 	    };
 
 	    exports.default = NodeDirectiveFactory;

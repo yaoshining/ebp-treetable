@@ -59,9 +59,6 @@ function initDataSource($resource, settings) {
     if(dataSource.read) {
         this.$readRepo = $resource(dataSource.read.url, dataSource.read.params);
     }
-    // if(dataSource.drop) {
-    //     this.$dropRepo = $resource(dataSource.drop.url, dataSource.drop.params);
-    // }
 }
 
 function initTreeTable($element, $compile, $scope) {
@@ -96,29 +93,30 @@ function nodesGenerator(data, $scope, $compile, level, index) {
 
 class TreeTableController {
 
-    constructor($scope, $attrs, defaultSettings, $element, $injector, $compile) {
+    constructor($scope, $attrs, defaultSettings, $element, $injector, $compile, $parse) {
         'ngInject';
-        let settings = $scope.$eval($attrs[directiveNames.ebpTreeTable]);
+        let settingsModel = $parse($attrs[directiveNames.ebpTreeTable]),
+            settings = settingsModel.apply(null, [$scope]);
         settings = _.merge({}, defaultSettings, settings);
         initSettings.apply(this, [settings]);
         $injector.invoke(initDataSource, this, {
             settings
         });
-
+        settingsModel.assign($scope.$parent, $injector.instantiate(TreeTableAdapter, {treeTable: this}));
         let _checkedNodes = [];
         this.$children = [];
-        this.remove = (node) => {
+        this.remove = node => {
             _.remove(this.data, (item) => {
                 return item.id === node.id;
             });
         };
 
-        this.checkAll = (state) => {
+        this.checkAll = state => {
             $scope.$broadcast('ebp-tt-node-check', state);
         };
 
         this.render = () => {
-            this.retrieve().$promise.then((data) => {
+            this.retrieve().$promise.then(data => {
                 this.data = data;
                 $injector.invoke(initTreeTable, this, {
                     $element,
@@ -156,14 +154,14 @@ class TreeTableController {
             }
         });
 
-        this.retrieve = (node) => {
+        this.retrieve = node => {
             let parentId = node?node.data.id:0;
             if(!this.$readRepo) {
                 return false;
             } else {
                 return this.$readRepo.query({
                     id: parentId
-                }, (data) => {
+                }, data => {
                     if(node) {
                         this.data.push(...data);
                         let elems = nodesGenerator(data, node.$el.scope(), $compile, node.$level + 1);
@@ -195,6 +193,24 @@ class TreeTableController {
 
     }
 
+}
+
+class TreeTableAdapter {
+
+    constructor(treeTable) {
+        'ngInject';
+        Object.defineProperty(this, 'treeTable', {
+            get: () => {
+                return treeTable;
+            }
+        });
+    }
+
+    get checkedNodes() {
+        return this.treeTable.checkedNodes.map(node => {
+            return node.data;
+        });
+    }
 }
 
 export default TreeTableDirectiveFactory;

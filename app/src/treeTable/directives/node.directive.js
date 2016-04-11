@@ -3,7 +3,6 @@
  */
 
 function linkFunc(scope, elem) {
-
 }
 
 function NodeDirectiveFactory() {
@@ -44,118 +43,27 @@ function initNode($scope, $element, $compile, $timeout) {
     };
     $timeout(this.render, 0);
     this.edit = () => {
-        let callback = (data) => {
-            _.merge(node, data);
-            $scope.$apply();
-            this.render();
-        };
-        events.edit(angular.copy(node, {}), callback);
+        events.edit(this.adapter);
     };
     this.remove = () => {
-        events.remove(node, () => {
-            let result = _.remove(treeTable.data, (item) => {
-                return item.id === node.id;
-            });
-            if(result.length > 0) {
-                removeChildren(this.$children);
-                let parent = this.$parent;
-                if(parent) {
-                    _.remove(parent.$children, (item) => {
-                        return item === this;
-                    });
-                    parent.refreshLevelNum();
-                } else {
-                    treeTable.refreshLevelNum();
-                }
-                this.$destroy();
-                treeTable.reIndex();
-            }
-        });
-        // treeTable.$dropRepo.remove({
-        //     id: node.id
-        // }, () => {
-        //     let result = _.remove(treeTable.data, (item) => {
-        //         return item.id === node.id;
-        //     });
-        //     if(result.length > 0) {
-        //         removeChildren(this.$children);
-        //         let parent = this.$parent;
-        //         if(parent) {
-        //             _.remove(parent.$children, (item) => {
-        //                 return item === this;
-        //             });
-        //             parent.refreshLevelNum();
-        //         } else {
-        //             treeTable.refreshLevelNum();
-        //         }
-        //         this.$destroy();
-        //         treeTable.reIndex();
-        //     }
-        // }, () => {
-        //     //only for tests
-        //     let result = _.remove(treeTable.data, (item) => {
-        //         return item.id === node.id;
-        //     });
-        //     if(result.length > 0) {
-        //         removeChildren(this.$children);
-        //         let parent = this.$parent;
-        //         if(parent) {
-        //             _.remove(parent.$children, (item) => {
-        //                 return item === this;
-        //             });
-        //             parent.refreshLevelNum();
-        //         } else {
-        //             treeTable.refreshLevelNum();
-        //         }
-        //         this.$destroy();
-        //         treeTable.reIndex();
-        //     }//end
-        // });
-
-        function removeChildren(children) {
-            let subChildren = getSubChildren(children);
-            angular.forEach(subChildren, (node) => {
-                _.remove(treeTable.data, (item) => {
-                    return item.id === node.data.id;
-                });
-                node.$destroy();
-            });
-            function getSubChildren(children) {
-                let nodes = children;
-                angular.forEach(children, (item) => {
-                    if(item.$children) {
-                        nodes.push(...getSubChildren(item.$children));
-                    }
-                });
-                return nodes;
-            }
-        }
+        events.remove(this.adapter);
     };
 
     this.add = () => {
-
-        let callback = (index, newNode) => {
-            if(!newNode || this.$children && index >= this.$children.length) {
-                return;
-            }
-            treeTable.add(index, this, newNode);
-            this.checked = false;
-        };
-
         if(node.isParent) {
             if(this.loaded) {
                 let children = [];
                 angular.forEach(this.$children, (child) => {
                     children.push(child.data);
                 });
-                events.add(node, children, callback);
+                events.add(this.adapter, children);
             } else {
                 treeTable.retrieve(this).$promise.then((data) => {
-                    events.add(node, data, callback);
+                    events.add(this.adapter, data);
                 });
             }
         } else {
-            events.add(node, null, callback);
+            events.add(this.adapter, null);
         }
         this.$el.addClass('open');
     };
@@ -181,8 +89,10 @@ function renderCell(el, treeTable, node, $compile, $scope) {
         if(col.tpl) {
             let contentEl = angular.element('<div>').html(col.tpl);
             elem.html(contentEl);
-            $compile(contentEl)($scope);
-            $('.fa', contentEl).click(event => event.stopPropagation());
+            let scope = $scope.$new();
+            scope.$node = this.adapter;
+            $compile(contentEl)(scope);
+            $('.fa, .ebp-tt-btn', contentEl).click(event => event.stopPropagation());
             elem.addClass('ebp-tt-func-cell');
         } else {
             if(col.type === 'progressBar') {
@@ -315,6 +225,7 @@ class EbpTreeTableNodeController {
             $element
         });
         this.$el = $element;
+        let adapter = $injector.instantiate(TreeTableNodeAdapter, {$node: this, $scope});
         Object.defineProperties(this, {
             data: {
                 get: () => {
@@ -373,7 +284,7 @@ class EbpTreeTableNodeController {
                 get: () => {
                     return checked;
                 },
-                set: (state) => {
+                set: state => {
                     checked = state;
                     let checkboxes = $('.ebp-tt-checkbox > input', $element);
                     if(checked) {
@@ -387,6 +298,11 @@ class EbpTreeTableNodeController {
                         $element.removeClass('checked');
                         checkboxes.prop('checked', false);
                     }
+                }
+            },
+            adapter: {
+                get: () => {
+                    return adapter;
                 }
             }
         });
@@ -426,8 +342,77 @@ class EbpTreeTableNodeController {
             }
         });
 
+        this.removeChildren = () => {
+            let children = this.$children;
+            let subChildren = getSubChildren(children);
+            angular.forEach(subChildren, (node) => {
+                _.remove(treeTable.data, (item) => {
+                    return item.id === node.data.id;
+                });
+                node.$destroy();
+            });
+            function getSubChildren(children) {
+                let nodes = children;
+                angular.forEach(children, (item) => {
+                    if(item.$children) {
+                        nodes.push(...getSubChildren(item.$children));
+                    }
+                });
+                return nodes;
+            }
+        };
+
     }
 
+}
+
+class TreeTableNodeAdapter {
+
+    constructor($node, $scope) {
+        'ngInject';
+        let treeTable = $scope.$ebpTreeTable;
+        Object.defineProperties(this, {
+            model: {
+                get: () => {
+                    return $node.data;
+                }
+            }
+        });
+
+        this.update = data => {
+            _.merge(this.model, data);
+            $node.render();
+            $scope.$apply();
+        };
+
+        this.insert = (index, newNode) => {
+            if(!newNode || $node.$children && index >= $node.$children.length) {
+                return;
+            }
+            treeTable.add(index, $node, newNode);
+            this.checked = false;
+        };
+
+        this.remove = () => {
+            let result = _.remove(treeTable.data, (item) => {
+                return item.id === this.model.id;
+            });
+            if(result.length > 0) {
+                $node.removeChildren();
+                let parent = $node.$parent;
+                if(parent) {
+                    _.remove(parent.$children, (item) => {
+                        return item === $node;
+                    });
+                    parent.refreshLevelNum();
+                } else {
+                    treeTable.refreshLevelNum();
+                }
+                $node.$destroy();
+                treeTable.reIndex();
+            }
+        };
+    }
 }
 
 export default NodeDirectiveFactory;
