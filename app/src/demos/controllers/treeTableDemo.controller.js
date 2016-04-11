@@ -5,7 +5,9 @@ class TreeTableDemoController {
 
     constructor($scope) {
         'ngInject';
+        let treeTable = null;
         $scope.treeTableSettings = {
+            treeTable: treeTable,
             colDefs: [{
                 name: 'name',
                 title: '名称',
@@ -34,7 +36,6 @@ class TreeTableDemoController {
                 type: 'progressBar'
             }, {
                 type: 'crud',
-                width: 150,
                 index: 4
             }],
             events: {
@@ -57,14 +58,16 @@ class TreeTableDemoController {
                         newNode.parentId = node?node.id:0;
                         callback(index, newNode);
                     }, 1000);
+                },
+                remove: function(node, callback) {
+                    setTimeout(function() {
+                        callback();
+                    }, 1000);
                 }
             },
             dataSource: {
                 read: {
                     url: '/data/:id.json'
-                },
-                drop: {
-                    url: '/tasks/:id'
                 }
             }
         };
@@ -72,6 +75,7 @@ class TreeTableDemoController {
         $scope.approval = function(node) {
             console.log(node.data);
         };
+
     }
 
 }

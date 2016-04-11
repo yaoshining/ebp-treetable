@@ -55,9 +55,7 @@ function initNode($scope, $element, $compile, $timeout) {
         if(!confirm("确定删除此条记录以及所有子记录吗?")) {
             return;
         }
-        treeTable.$dropRepo.remove({
-            id: node.id
-        }, () => {
+        let callback = () => {
             let result = _.remove(treeTable.data, (item) => {
                 return item.id === node.id;
             });
@@ -75,26 +73,48 @@ function initNode($scope, $element, $compile, $timeout) {
                 this.$destroy();
                 treeTable.reIndex();
             }
-        }, () => {
-            //only for tests
-            let result = _.remove(treeTable.data, (item) => {
-                return item.id === node.id;
-            });
-            if(result.length > 0) {
-                removeChildren(this.$children);
-                let parent = this.$parent;
-                if(parent) {
-                    _.remove(parent.$children, (item) => {
-                        return item === this;
-                    });
-                    parent.refreshLevelNum();
-                } else {
-                    treeTable.refreshLevelNum();
-                }
-                this.$destroy();
-                treeTable.reIndex();
-            }//end
-        });
+        };
+        events.remove(node, callback);
+        // treeTable.$dropRepo.remove({
+        //     id: node.id
+        // }, () => {
+        //     let result = _.remove(treeTable.data, (item) => {
+        //         return item.id === node.id;
+        //     });
+        //     if(result.length > 0) {
+        //         removeChildren(this.$children);
+        //         let parent = this.$parent;
+        //         if(parent) {
+        //             _.remove(parent.$children, (item) => {
+        //                 return item === this;
+        //             });
+        //             parent.refreshLevelNum();
+        //         } else {
+        //             treeTable.refreshLevelNum();
+        //         }
+        //         this.$destroy();
+        //         treeTable.reIndex();
+        //     }
+        // }, () => {
+        //     //only for tests
+        //     let result = _.remove(treeTable.data, (item) => {
+        //         return item.id === node.id;
+        //     });
+        //     if(result.length > 0) {
+        //         removeChildren(this.$children);
+        //         let parent = this.$parent;
+        //         if(parent) {
+        //             _.remove(parent.$children, (item) => {
+        //                 return item === this;
+        //             });
+        //             parent.refreshLevelNum();
+        //         } else {
+        //             treeTable.refreshLevelNum();
+        //         }
+        //         this.$destroy();
+        //         treeTable.reIndex();
+        //     }//end
+        // });
 
         function removeChildren(children) {
             let subChildren = getSubChildren(children);
@@ -176,24 +196,26 @@ function renderCell(el, treeTable, node, $compile, $scope) {
             }
             if(col.type === 'crud') {
                 let addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add');
-                let editBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-edit');
+                // let editBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-edit');
                 let delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete');
                 addBtn.click((event) => {
                     event.preventDefault();
                     event.stopPropagation();
                     this.add();
                 });
-                editBtn.click((event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    this.edit();
-                });
+                // editBtn.click((event) => {
+                //     event.preventDefault();
+                //     event.stopPropagation();
+                //     this.edit();
+                // });
                 delBtn.click((event) => {
                     event.preventDefault();
                     event.stopPropagation();
                     this.remove();
                 });
-                elem.append(addBtn).append(editBtn).append(delBtn);
+                elem.append(addBtn)
+                    // .append(editBtn)
+                    .append(delBtn);
             }
         }
         if(col.checkable) {

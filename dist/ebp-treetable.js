@@ -503,8 +503,7 @@
 	            add: angular.noop
 	        },
 	        dataSource: {
-	            read: null,
-	            drop: null
+	            read: null
 	        }
 	    };
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -940,9 +939,7 @@
 	            if (!confirm("确定删除此条记录以及所有子记录吗?")) {
 	                return;
 	            }
-	            treeTable.$dropRepo.remove({
-	                id: node.id
-	            }, function () {
+	            var callback = function callback() {
 	                var result = _.remove(treeTable.data, function (item) {
 	                    return item.id === node.id;
 	                });
@@ -960,26 +957,48 @@
 	                    _this.$destroy();
 	                    treeTable.reIndex();
 	                }
-	            }, function () {
-	                //only for tests
-	                var result = _.remove(treeTable.data, function (item) {
-	                    return item.id === node.id;
-	                });
-	                if (result.length > 0) {
-	                    removeChildren(_this.$children);
-	                    var parent = _this.$parent;
-	                    if (parent) {
-	                        _.remove(parent.$children, function (item) {
-	                            return item === _this;
-	                        });
-	                        parent.refreshLevelNum();
-	                    } else {
-	                        treeTable.refreshLevelNum();
-	                    }
-	                    _this.$destroy();
-	                    treeTable.reIndex();
-	                } //end
-	            });
+	            };
+	            events.remove(node, callback);
+	            // treeTable.$dropRepo.remove({
+	            //     id: node.id
+	            // }, () => {
+	            //     let result = _.remove(treeTable.data, (item) => {
+	            //         return item.id === node.id;
+	            //     });
+	            //     if(result.length > 0) {
+	            //         removeChildren(this.$children);
+	            //         let parent = this.$parent;
+	            //         if(parent) {
+	            //             _.remove(parent.$children, (item) => {
+	            //                 return item === this;
+	            //             });
+	            //             parent.refreshLevelNum();
+	            //         } else {
+	            //             treeTable.refreshLevelNum();
+	            //         }
+	            //         this.$destroy();
+	            //         treeTable.reIndex();
+	            //     }
+	            // }, () => {
+	            //     //only for tests
+	            //     let result = _.remove(treeTable.data, (item) => {
+	            //         return item.id === node.id;
+	            //     });
+	            //     if(result.length > 0) {
+	            //         removeChildren(this.$children);
+	            //         let parent = this.$parent;
+	            //         if(parent) {
+	            //             _.remove(parent.$children, (item) => {
+	            //                 return item === this;
+	            //             });
+	            //             parent.refreshLevelNum();
+	            //         } else {
+	            //             treeTable.refreshLevelNum();
+	            //         }
+	            //         this.$destroy();
+	            //         treeTable.reIndex();
+	            //     }//end
+	            // });
 
 	            function removeChildren(children) {
 	                var subChildren = getSubChildren(children);
@@ -1065,24 +1084,26 @@
 	                }
 	                if (col.type === 'crud') {
 	                    var addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add');
-	                    var editBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-edit');
+	                    // let editBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-edit');
 	                    var delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete');
 	                    addBtn.click(function (event) {
 	                        event.preventDefault();
 	                        event.stopPropagation();
 	                        _this2.add();
 	                    });
-	                    editBtn.click(function (event) {
-	                        event.preventDefault();
-	                        event.stopPropagation();
-	                        _this2.edit();
-	                    });
+	                    // editBtn.click((event) => {
+	                    //     event.preventDefault();
+	                    //     event.stopPropagation();
+	                    //     this.edit();
+	                    // });
 	                    delBtn.click(function (event) {
 	                        event.preventDefault();
 	                        event.stopPropagation();
 	                        _this2.remove();
 	                    });
-	                    elem.append(addBtn).append(editBtn).append(delBtn);
+	                    elem.append(addBtn)
+	                    // .append(editBtn)
+	                    .append(delBtn);
 	                }
 	            }
 	            if (col.checkable) {

@@ -17,7 +17,6 @@ export const treeTableSettings = {
         add: angular.noop
     },
     dataSource: {
-        read: null,
-        drop: null
+        read: null
     }
 };
