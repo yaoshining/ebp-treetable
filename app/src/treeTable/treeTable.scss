@@ -93,6 +93,14 @@ $ebp-tt-default-col-width: 7em;
         font-size: 12px;
       }
 
+      .fa {
+        color: inherit;
+        text-decoration: none;
+        font-size: 1.6em;
+        text-align: center;
+        margin: 5px;
+      }
+
     }
     tr:last-child > td {
       border-bottom: none;

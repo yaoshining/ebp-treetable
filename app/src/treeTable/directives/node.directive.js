@@ -186,6 +186,7 @@ function renderCell(el, treeTable, node, $compile, $scope) {
             let contentEl = angular.element('<div>').html(col.tpl);
             elem.html(contentEl);
             $compile(contentEl)($scope);
+            $('.fa', contentEl).click(event => event.stopPropagation());
             elem.addClass('ebp-tt-func-cell');
         } else {
             if(col.type === 'progressBar') {
