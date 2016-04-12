@@ -115,7 +115,7 @@ function renderCell(el, treeTable, node, $compile, $scope) {
                 //     event.stopPropagation();
                 //     this.edit();
                 // });
-                delBtn.click((event) => {
+                delBtn.click(event => {
                     event.preventDefault();
                     event.stopPropagation();
                     this.remove();

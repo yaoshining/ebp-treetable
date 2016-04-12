@@ -199,18 +199,24 @@ class TreeTableAdapter {
 
     constructor(treeTable) {
         'ngInject';
-        Object.defineProperty(this, 'treeTable', {
-            get: () => {
-                return treeTable;
+        Object.defineProperties(this, {
+            checkedNodes: {
+                get: () => {
+                    return treeTable.checkedNodes.map(node => {
+                        return node.data;
+                    });
+                }
             }
         });
+        
+        this.insert = (index, newNode) => {
+            if(!newNode || treeTable.$children && index >= treeTable.$children.length) {
+                return;
+            }
+            treeTable.add(index, null, newNode);
+        };
     }
 
-    get checkedNodes() {
-        return this.treeTable.checkedNodes.map(node => {
-            return node.data;
-        });
-    }
 }
 
 export default TreeTableDirectiveFactory;

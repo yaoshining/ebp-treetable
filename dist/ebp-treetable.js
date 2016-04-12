@@ -519,24 +519,6 @@
 	        value: true
 	    });
 
-	    var _createClass = function () {
-	        function defineProperties(target, props) {
-	            for (var i = 0; i < props.length; i++) {
-	                var descriptor = props[i];
-	                descriptor.enumerable = descriptor.enumerable || false;
-	                descriptor.configurable = true;
-	                if ("value" in descriptor) descriptor.writable = true;
-	                Object.defineProperty(target, descriptor.key, descriptor);
-	            }
-	        }
-
-	        return function (Constructor, protoProps, staticProps) {
-	            if (protoProps) defineProperties(Constructor.prototype, protoProps);
-	            if (staticProps) defineProperties(Constructor, staticProps);
-	            return Constructor;
-	        };
-	    }();
-
 	    function _toConsumableArray(arr) {
 	        if (Array.isArray(arr)) {
 	            for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
@@ -760,30 +742,28 @@
 	        };
 	    };
 
-	    var TreeTableAdapter = function () {
-	        function TreeTableAdapter(treeTable) {
-	            'ngInject';
+	    var TreeTableAdapter = function TreeTableAdapter(treeTable) {
+	        'ngInject';
 
-	            _classCallCheck(this, TreeTableAdapter);
+	        _classCallCheck(this, TreeTableAdapter);
 
-	            Object.defineProperty(this, 'treeTable', {
+	        Object.defineProperties(this, {
+	            checkedNodes: {
 	                get: function get() {
-	                    return treeTable;
+	                    return treeTable.checkedNodes.map(function (node) {
+	                        return node.data;
+	                    });
 	                }
-	            });
-	        }
-
-	        _createClass(TreeTableAdapter, [{
-	            key: 'checkedNodes',
-	            get: function get() {
-	                return this.treeTable.checkedNodes.map(function (node) {
-	                    return node.data;
-	                });
 	            }
-	        }]);
+	        });
 
-	        return TreeTableAdapter;
-	    }();
+	        this.insert = function (index, newNode) {
+	            if (!newNode || treeTable.$children && index >= treeTable.$children.length) {
+	                return;
+	            }
+	            treeTable.add(index, null, newNode);
+	        };
+	    };
 
 	    exports.default = TreeTableDirectiveFactory;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -1375,8 +1355,6 @@
 	    });
 
 	    function linkFunc(scope, elem) {
-	        var _this = this;
-
 	        var width = elem.width();
 	        var treeTable = scope.$ebpTreeTable;
 	        var events = treeTable.events;
@@ -1422,22 +1400,13 @@
 	        });
 	        if (col) {
 	            if (col.type === 'crud') {
-	                (function () {
-	                    var addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-insert-row');
-	                    var callback = function callback(index, newNode) {
-	                        if (!newNode || treeTable.$children && index >= treeTable.$children.length) {
-	                            return;
-	                        }
-	                        treeTable.add(index, _this, newNode);
-	                        //this.checked = false;
-	                    };
-	                    addBtn.on('click', function (event) {
-	                        event.preventDefault();
-	                        events.add(null, treeTable.$children, callback);
-	                    });
-	                    elem.addClass('ebp-tt-crud-col');
-	                    elem.html(addBtn);
-	                })();
+	                var addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-insert-row');
+	                addBtn.on('click', function (event) {
+	                    event.preventDefault();
+	                    events.add(null, treeTable.$children);
+	                });
+	                elem.addClass('ebp-tt-crud-col');
+	                elem.html(addBtn);
 	            }
 	            if (col.checkable) {
 	                (function () {

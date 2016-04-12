@@ -49,16 +49,9 @@ function linkFunc(scope, elem) {
     if(col) {
         if(col.type === 'crud') {
             let addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-insert-row');
-            let callback = (index, newNode) => {
-                if(!newNode || treeTable.$children && index >= treeTable.$children.length) {
-                    return;
-                }
-                treeTable.add(index, this, newNode);
-                //this.checked = false;
-            };
             addBtn.on('click', (event) => {
                 event.preventDefault();
-                events.add(null, treeTable.$children, callback);
+                events.add(null, treeTable.$children);
             });
             elem.addClass('ebp-tt-crud-col');
             elem.html(addBtn);
