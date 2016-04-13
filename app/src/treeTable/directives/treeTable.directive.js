@@ -154,6 +154,10 @@ class TreeTableController {
             }
         });
 
+        this.get = (i) => {
+            return this.$children[i];
+        };
+
         this.retrieve = node => {
             let parentId = node?node.data.id:0;
             if(!this.$readRepo) {
@@ -203,7 +207,7 @@ class TreeTableAdapter {
             checkedNodes: {
                 get: () => {
                     return treeTable.checkedNodes.map(node => {
-                        return node.data;
+                        return node.adapter;
                     });
                 }
             }

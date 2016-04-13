@@ -1,7 +1,6 @@
 /**
  * Created by yaoshining on 16/3/23.
  */
-import {directiveNames} from '../config';
 function linkFunc(scope, elem) {
     let width = elem.width();
     let treeTable = scope.$ebpTreeTable;

@@ -70,13 +70,21 @@ class TreeTableDemoController {
             },
             dataSource: {
                 read: {
-                    url: '/data/:id.json'
+                    url: '/data/:id.json',
+                    params: {
+                        id: '@id',
+                        name: '@name'
+                    }
                 }
             }
         };
 
         $scope.approval = function(node) {
-            console.log(node.model);
+            node.shiftUp();
+        };
+
+        $scope.adjust = function(node) {
+            node.shiftDown();
         };
     }
 

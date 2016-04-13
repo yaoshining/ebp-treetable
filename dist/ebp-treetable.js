@@ -694,6 +694,10 @@
 	            }
 	        });
 
+	        this.get = function (i) {
+	            return _this.$children[i];
+	        };
+
 	        this.retrieve = function (node) {
 	            var parentId = node ? node.data.id : 0;
 	            if (!_this.$readRepo) {
@@ -751,7 +755,7 @@
 	            checkedNodes: {
 	                get: function get() {
 	                    return treeTable.checkedNodes.map(function (node) {
-	                        return node.data;
+	                        return node.adapter;
 	                    });
 	                }
 	            }
@@ -1015,26 +1019,18 @@
 	                }
 	                if (col.type === 'crud') {
 	                    var addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add');
-	                    // let editBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-edit');
 	                    var delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete');
 	                    addBtn.click(function (event) {
 	                        event.preventDefault();
 	                        event.stopPropagation();
 	                        _this2.add();
 	                    });
-	                    // editBtn.click((event) => {
-	                    //     event.preventDefault();
-	                    //     event.stopPropagation();
-	                    //     this.edit();
-	                    // });
 	                    delBtn.click(function (event) {
 	                        event.preventDefault();
 	                        event.stopPropagation();
 	                        _this2.remove();
 	                    });
-	                    elem.append(addBtn)
-	                    // .append(editBtn)
-	                    .append(delBtn);
+	                    elem.append(addBtn).append(delBtn);
 	                }
 	            }
 	            if (col.checkable) {
@@ -1177,7 +1173,7 @@
 	                get: function get() {
 	                    var index = 0;
 	                    if (!_this4.$parent) {
-	                        index = _.indexOf(treeTable.data, _this4.data);
+	                        index = _.indexOf(treeTable.$children, _this4);
 	                    } else {
 	                        index = _.indexOf(_this4.$parent.$children, _this4);
 	                    }
@@ -1230,24 +1226,39 @@
 	                get: function get() {
 	                    return adapter;
 	                }
+	            },
+	            descendants: {
+	                get: function get() {
+	                    var children = _this4.$children || [];
+	                    angular.forEach(children, function (node) {
+	                        children.push.apply(children, _toConsumableArray(node.descendants));
+	                    });
+	                    return children;
+	                }
 	            }
 	        });
-	        if ($scope.$parent.$node) {
-	            this.$parent.$children = this.$parent.$children || [];
-	            var index = $element.data('index');
-	            if (angular.isUndefined(index)) {
-	                index = this.$parent.$children.length;
-	            } else {
-	                setTimeout(function () {
-	                    _this4.$parent.refreshLevelNum();
-	                }, 0);
-	            }
-	            this.$parent.$children.splice(index, 0, this);
-	            this.$parent.isParent = true;
+	        {
+	            (function () {
+	                var parent = _this4.$parent;
+	                if (parent) {
+	                    _this4.$parent.$children = _this4.$parent.$children || [];
+	                    parent.isParent = true;
+	                } else {
+	                    parent = treeTable;
+	                }
+	                var children = parent.$children || [];
+	                var index = $element.data('index');
+	                if (angular.isUndefined(index)) {
+	                    index = children.length;
+	                } else {
+	                    setTimeout(function () {
+	                        parent.refreshLevelNum();
+	                    }, 0);
+	                }
+	                children.splice(index, 0, _this4);
+	            })();
 	        }
-	        if ($scope.level === 1) {
-	            treeTable.$children.push(this);
-	        }
+
 	        $scope.$on('ebp.tt.refreshLevelNum', function () {
 	            _this4.$el.find('.ebp-tt-level-cell').text(_this4.levelNum);
 	        });
@@ -1261,12 +1272,63 @@
 	            $scope.$destroy();
 	        };
 
+	        this.get = function (i) {
+	            return _this4.$children[i];
+	        };
+
+	        this.exchange = function (target) {
+	            if (!target || angular.equals(_this4, target)) {
+	                return;
+	            }
+	            var index = _this4.levelIndex;
+	            if (index < 0) {
+	                return;
+	            }
+
+	            var from = _this4.levelIndex,
+	                to = target.levelIndex,
+	                n = _this4.$el.next(),
+	                p = target.$el.prev();
+	            if (from > to) {
+	                target.$el.insertBefore(n);
+	                _this4.$el.insertAfter(p);
+	            } else {
+	                target.$el.insertBefore(_this4.$el);
+	                _this4.$el.insertAfter(p);
+	            }
+	            angular.forEach(_this4.descendants, function (node) {
+	                return node.updatePosition();
+	            });
+	            angular.forEach(target.descendants, function (node) {
+	                return node.updatePosition();
+	            });
+	            if (_this4.$parent) {
+	                _this4.$parent.$children.splice(from, 1);
+	                _this4.$parent.$children.splice(to, 0, _this4);
+	                _this4.$parent.refreshLevelNum();
+	            } else {
+	                treeTable.$children.splice(from, 1);
+	                treeTable.$children.splice(to, 0, _this4);
+	                treeTable.refreshLevelNum();
+	            }
+	            treeTable.reIndex();
+	        };
+
 	        $scope.$on('ebp-tt-node-check', function (event, state) {
 	            _this4.checked = state;
 	            if (_this4.$parent) {
 	                _this4.$parent.checked = _.every(_this4.$parent.$children, 'checked');
 	            }
 	        });
+
+	        this.updatePosition = function () {
+	            var index = _this4.$parent.$el.index() + _this4.levelIndex;
+	            if (_this4.$el.index() < index) {
+	                index--;
+	            }
+	            var n = _this4.$el.siblings().eq(index);
+	            _this4.$el.insertAfter(n);
+	        };
 
 	        this.removeChildren = function () {
 	            var children = _this4.$children;
@@ -1287,6 +1349,29 @@
 	                return nodes;
 	            }
 	        };
+
+	        this.shiftUp = function () {
+	            if (_this4.levelIndex < 1) {
+	                return;
+	            }
+	            var target = null;
+	            if (_this4.$parent) {
+	                target = _this4.$parent.get(_this4.levelIndex - 1);
+	            } else {
+	                target = treeTable.get(_this4.levelIndex - 1);
+	            }
+	            _this4.exchange(target);
+	        };
+
+	        this.shiftDown = function () {
+	            var target = null;
+	            if (_this4.$parent) {
+	                target = _this4.$parent.get(_this4.levelIndex + 1);
+	            } else {
+	                target = treeTable.get(_this4.levelIndex + 1);
+	            }
+	            _this4.exchange(target);
+	        };
 	    };
 
 	    var TreeTableNodeAdapter = function TreeTableNodeAdapter($node, $scope) {
@@ -1301,6 +1386,11 @@
 	            model: {
 	                get: function get() {
 	                    return $node.data;
+	                }
+	            },
+	            levelNum: {
+	                get: function get() {
+	                    return $node.levelNum;
 	                }
 	            }
 	        });
@@ -1338,6 +1428,14 @@
 	                treeTable.reIndex();
 	            }
 	        };
+
+	        this.shiftUp = function () {
+	            $node.shiftUp();
+	        };
+
+	        this.shiftDown = function () {
+	            $node.shiftDown();
+	        };
 	    };
 
 	    exports.default = NodeDirectiveFactory;
@@ -1347,13 +1445,15 @@
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports) {
 	    'use strict';
 
 	    Object.defineProperty(exports, "__esModule", {
 	        value: true
 	    });
-
+	    /**
+	     * Created by yaoshining on 16/3/23.
+	     */
 	    function linkFunc(scope, elem) {
 	        var width = elem.width();
 	        var treeTable = scope.$ebpTreeTable;
@@ -1426,10 +1526,7 @@
 	                })();
 	            }
 	        }
-	    } /**
-	       * Created by yaoshining on 16/3/23.
-	       */
-
+	    }
 
 	    function HeaderDirectiveFactory() {
 	        var directive = {
