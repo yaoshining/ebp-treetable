@@ -72,8 +72,7 @@ class TreeTableDemoController {
                 read: {
                     url: '/data/:id.json',
                     params: {
-                        id: '@id',
-                        name: '@name'
+                        name: '123'
                     }
                 }
             }

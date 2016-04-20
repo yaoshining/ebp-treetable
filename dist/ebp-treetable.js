@@ -1058,9 +1058,14 @@
 	                elem.css({
 	                    'text-indent': indent + 'px'
 	                });
-	                _this2.expandHandler = $('<i>').addClass('ebp-tt-expand-handler');
-	                elem.prepend(_this2.expandHandler);
-	                _this2.expandHandler.on('click', function (event) {
+	                var handler = $('<i>').addClass('ebp-tt-expand-handler');
+	                elem.prepend(handler);
+	                if (_this2.expandHandlers instanceof $) {
+	                    _this2.expandHandlers.add(handler);
+	                } else {
+	                    _this2.expandHandlers = $(handler);
+	                }
+	                handler.on('click', function (event) {
 	                    event.stopPropagation();
 	                    if (el.is('.open')) {
 	                        collapseNodes(el, _this2.$children);
@@ -1069,7 +1074,7 @@
 	                    }
 	                });
 	                if (!node.isParent) {
-	                    _this2.expandHandler.css('visibility', 'hidden');
+	                    handler.css('visibility', 'hidden');
 	                }
 	                _this2.expand = expandNodes;
 	            }
@@ -1196,9 +1201,7 @@
 	                    return _this4.data.isParent;
 	                },
 	                set: function set(state) {
-	                    if (state) {
-	                        _this4.expandHandler.css('visibility', 'visible');
-	                    }
+	                    _this4.expandHandlers.css('visibility', state ? 'visible' : 'hidden');
 	                    _this4.data.isParent = state;
 	                }
 	            },
@@ -1402,7 +1405,7 @@
 	        };
 
 	        this.insert = function (index, newNode) {
-	            if (!newNode || $node.$children && index >= $node.$children.length) {
+	            if (!newNode || $node.$children && index > $node.$children.length) {
 	                return;
 	            }
 	            treeTable.add(index, $node, newNode);
@@ -1421,6 +1424,9 @@
 	                        return item === $node;
 	                    });
 	                    parent.refreshLevelNum();
+	                    if (parent.$children < 1) {
+	                        parent.isParent = false;
+	                    }
 	                } else {
 	                    treeTable.refreshLevelNum();
 	                }
