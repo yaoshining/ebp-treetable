@@ -129,7 +129,10 @@ function renderCell(el, treeTable, node, $compile, $scope) {
             checkbox.on({
                 change: () => {
                     let state = checkbox.is(':checked');
-                    $scope.$broadcast('ebp-tt-node-check', state);
+                    // $scope.$broadcast('ebp-tt-node-check', state);
+                    angular.forEach([].concat(this.descendants, [this]), node => {
+                        node.checked = state;
+                    });
                 }
             });
             checkHandler.click((event) => event.stopPropagation());
@@ -158,6 +161,11 @@ function renderCell(el, treeTable, node, $compile, $scope) {
                 handler.css('visibility', 'hidden');
             }
             this.expand = expandNodes;
+            if(this.expandableCells instanceof $) {
+                this.expandableCells.add(elem);
+            } else {
+                this.expandableCells = elem;
+            }
         }
         el.append(elem);
     });
@@ -224,6 +232,8 @@ class EbpTreeTableNodeController {
         });
         this.$el = $element;
         let adapter = $injector.instantiate(TreeTableNodeAdapter, {$node: this, $scope});
+        let level = $scope.level;
+        let parent = $scope.$parent.$node;
         Object.defineProperties(this, {
             data: {
                 get: () => {
@@ -232,7 +242,10 @@ class EbpTreeTableNodeController {
             },
             $level: {
                 get: () => {
-                    return $scope.level;
+                    return level;
+                },
+                set: (newLevel) => {
+                    level = newLevel;
                 }
             },
             loaded: {
@@ -242,7 +255,10 @@ class EbpTreeTableNodeController {
             },
             $parent: {
                 get: () => {
-                    return $scope.$parent.$node;
+                    return parent;
+                },
+                set: (p) => {
+                    parent = p;
                 }
             },
             levelIndex: {
@@ -294,6 +310,9 @@ class EbpTreeTableNodeController {
                         $element.removeClass('checked');
                         checkboxes.prop('checked', false);
                     }
+                    if(this.$parent) {
+                        this.$parent.checked = _.every(this.$parent.$children, 'checked');
+                    }
                 }
             },
             adapter: {
@@ -336,7 +355,9 @@ class EbpTreeTableNodeController {
         });
 
         this.refreshLevelNum = () => {
-            $scope.$broadcast('ebp.tt.refreshLevelNum');
+            angular.forEach([].concat(this.descendants, [this]), node => {
+                node.$el.find('.ebp-tt-level-cell').text(this.levelNum);
+            });
         };
 
         this.$destroy = () => {
@@ -352,41 +373,40 @@ class EbpTreeTableNodeController {
             if(!target || angular.equals(this, target)) {
                 return;
             }
-            let index = this.levelIndex;
-            if(index < 0) {
-                return;
-            }
+            if(this.$level === target.$level) {
+                let index = this.levelIndex;
+                if(index < 0) {
+                    return;
+                }
 
-            let from = this.levelIndex,
-                to = target.levelIndex,
-                n = this.$el.next(),
-                p = target.$el.prev();
-            if(from > to) {
-                target.$el.insertBefore(n);
-                this.$el.insertAfter(p);
-            } else {
-                target.$el.insertBefore(this.$el);
-                this.$el.insertAfter(p);
+                let from = this.levelIndex,
+                    to = target.levelIndex,
+                    n = this.$el.next(),
+                    p = target.$el.prev();
+                if(from > to) {
+                    target.$el.insertBefore(n);
+                    this.$el.insertAfter(p);
+                } else {
+                    target.$el.insertBefore(this.$el);
+                    this.$el.insertAfter(p);
+                }
+                angular.forEach(this.descendants, node => node.updatePosition());
+                angular.forEach(target.descendants, node => node.updatePosition());
+                if(this.$parent) {
+                    this.$parent.$children.splice(from, 1);
+                    this.$parent.$children.splice(to, 0, this);
+                    this.$parent.refreshLevelNum();
+                } else {
+                    treeTable.$children.splice(from, 1);
+                    treeTable.$children.splice(to, 0, this);
+                    treeTable.refreshLevelNum();
+                }
+                treeTable.reIndex();
             }
-            angular.forEach(this.descendants, node => node.updatePosition());
-            angular.forEach(target.descendants, node => node.updatePosition());
-            if(this.$parent) {
-                this.$parent.$children.splice(from, 1);
-                this.$parent.$children.splice(to, 0, this);
-                this.$parent.refreshLevelNum();
-            } else {
-                treeTable.$children.splice(from, 1);
-                treeTable.$children.splice(to, 0, this);
-                treeTable.refreshLevelNum();
-            }
-            treeTable.reIndex();
         };
 
         $scope.$on('ebp-tt-node-check', (event, state) => {
             this.checked = state;
-            if(this.$parent) {
-                this.$parent.checked = _.every(this.$parent.$children, 'checked');
-            }
         });
 
         this.updatePosition = () => {
@@ -418,6 +438,15 @@ class EbpTreeTableNodeController {
             }
         };
 
+        this.reIndent = () => {
+            angular.forEach([].concat(this.descendants, [this]), node => {
+                let indent = 20 * (node.$level - 1);
+                node.expandableCells.css({
+                    'text-indent': indent + 'px'
+                });
+            });
+        };
+
         this.shiftUp = () => {
             if(this.levelIndex < 1) {
                 return;
@@ -439,6 +468,31 @@ class EbpTreeTableNodeController {
                 target = treeTable.get(this.levelIndex + 1);
             }
             this.exchange(target);
+        };
+
+        this.upgrade = () => {
+            let target = this.$parent,
+                parent = this.$parent,
+                grandpa = treeTable,
+                index = target.levelIndex;
+            if(!parent) {
+                return;
+            }
+            if(parent.$parent) {
+                grandpa = parent.$parent;
+            }
+            this.$el.insertBefore(target.$el);
+            this.$level--;
+            _.remove(parent.$children, node => node === this);
+            grandpa.$children.splice(index, 0 ,this);
+            this.$parent = parent.$parent || undefined;
+            angular.forEach(this.descendants, node => {
+                node.updatePosition();
+                node.$level--;
+            });
+            this.reIndent();
+            grandpa.refreshLevelNum();
+            treeTable.reIndex();
         };
     }
 
@@ -505,6 +559,14 @@ class TreeTableNodeAdapter {
 
         this.shiftDown = () => {
             $node.shiftDown();
+        };
+
+        this.upgrade = () => {
+            $node.upgrade();
+        };
+
+        this.degrade = () => {
+            $node.degrade();
         };
     }
 }

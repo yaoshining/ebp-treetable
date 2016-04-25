@@ -79,11 +79,13 @@ class TreeTableDemoController {
         };
 
         $scope.approval = function(node) {
-            node.shiftUp();
+            // node.shiftUp();
+            node.upgrade();
         };
 
         $scope.adjust = function(node) {
-            node.shiftDown();
+            // node.shiftDown();
+            node.degrade();
         };
     }
 
