@@ -1045,7 +1045,10 @@
 	                    checkbox.on({
 	                        change: function change() {
 	                            var state = checkbox.is(':checked');
-	                            $scope.$broadcast('ebp-tt-node-check', state);
+	                            // $scope.$broadcast('ebp-tt-node-check', state);
+	                            angular.forEach([].concat(_this2.descendants, [_this2]), function (node) {
+	                                node.checked = state;
+	                            });
 	                        }
 	                    });
 	                    checkHandler.click(function (event) {
@@ -1077,6 +1080,11 @@
 	                    handler.css('visibility', 'hidden');
 	                }
 	                _this2.expand = expandNodes;
+	                if (_this2.expandableCells instanceof $) {
+	                    _this2.expandableCells.add(elem);
+	                } else {
+	                    _this2.expandableCells = elem;
+	                }
 	            }
 	            el.append(elem);
 	        });
@@ -1153,6 +1161,8 @@
 	        });
 	        this.$el = $element;
 	        var adapter = $injector.instantiate(TreeTableNodeAdapter, { $node: this, $scope: $scope });
+	        var level = $scope.level;
+	        var parent = $scope.$parent.$node;
 	        Object.defineProperties(this, {
 	            data: {
 	                get: function get() {
@@ -1161,7 +1171,10 @@
 	            },
 	            $level: {
 	                get: function get() {
-	                    return $scope.level;
+	                    return level;
+	                },
+	                set: function set(newLevel) {
+	                    level = newLevel;
 	                }
 	            },
 	            loaded: {
@@ -1171,7 +1184,10 @@
 	            },
 	            $parent: {
 	                get: function get() {
-	                    return $scope.$parent.$node;
+	                    return parent;
+	                },
+	                set: function set(p) {
+	                    parent = p;
 	                }
 	            },
 	            levelIndex: {
@@ -1223,6 +1239,9 @@
 	                        $element.removeClass('checked');
 	                        checkboxes.prop('checked', false);
 	                    }
+	                    if (_this4.$parent) {
+	                        _this4.$parent.checked = _.every(_this4.$parent.$children, 'checked');
+	                    }
 	                }
 	            },
 	            adapter: {
@@ -1267,7 +1286,9 @@
 	        });
 
 	        this.refreshLevelNum = function () {
-	            $scope.$broadcast('ebp.tt.refreshLevelNum');
+	            angular.forEach([].concat(_this4.descendants, [_this4]), function (node) {
+	                node.$el.find('.ebp-tt-level-cell').text(_this4.levelNum);
+	            });
 	        };
 
 	        this.$destroy = function () {
@@ -1283,45 +1304,44 @@
 	            if (!target || angular.equals(_this4, target)) {
 	                return;
 	            }
-	            var index = _this4.levelIndex;
-	            if (index < 0) {
-	                return;
-	            }
+	            if (_this4.$level === target.$level) {
+	                var index = _this4.levelIndex;
+	                if (index < 0) {
+	                    return;
+	                }
 
-	            var from = _this4.levelIndex,
-	                to = target.levelIndex,
-	                n = _this4.$el.next(),
-	                p = target.$el.prev();
-	            if (from > to) {
-	                target.$el.insertBefore(n);
-	                _this4.$el.insertAfter(p);
-	            } else {
-	                target.$el.insertBefore(_this4.$el);
-	                _this4.$el.insertAfter(p);
+	                var from = _this4.levelIndex,
+	                    to = target.levelIndex,
+	                    n = _this4.$el.next(),
+	                    p = target.$el.prev();
+	                if (from > to) {
+	                    target.$el.insertBefore(n);
+	                    _this4.$el.insertAfter(p);
+	                } else {
+	                    target.$el.insertBefore(_this4.$el);
+	                    _this4.$el.insertAfter(p);
+	                }
+	                angular.forEach(_this4.descendants, function (node) {
+	                    return node.updatePosition();
+	                });
+	                angular.forEach(target.descendants, function (node) {
+	                    return node.updatePosition();
+	                });
+	                if (_this4.$parent) {
+	                    _this4.$parent.$children.splice(from, 1);
+	                    _this4.$parent.$children.splice(to, 0, _this4);
+	                    _this4.$parent.refreshLevelNum();
+	                } else {
+	                    treeTable.$children.splice(from, 1);
+	                    treeTable.$children.splice(to, 0, _this4);
+	                    treeTable.refreshLevelNum();
+	                }
+	                treeTable.reIndex();
 	            }
-	            angular.forEach(_this4.descendants, function (node) {
-	                return node.updatePosition();
-	            });
-	            angular.forEach(target.descendants, function (node) {
-	                return node.updatePosition();
-	            });
-	            if (_this4.$parent) {
-	                _this4.$parent.$children.splice(from, 1);
-	                _this4.$parent.$children.splice(to, 0, _this4);
-	                _this4.$parent.refreshLevelNum();
-	            } else {
-	                treeTable.$children.splice(from, 1);
-	                treeTable.$children.splice(to, 0, _this4);
-	                treeTable.refreshLevelNum();
-	            }
-	            treeTable.reIndex();
 	        };
 
 	        $scope.$on('ebp-tt-node-check', function (event, state) {
 	            _this4.checked = state;
-	            if (_this4.$parent) {
-	                _this4.$parent.checked = _.every(_this4.$parent.$children, 'checked');
-	            }
 	        });
 
 	        this.updatePosition = function () {
@@ -1353,6 +1373,15 @@
 	            }
 	        };
 
+	        this.reIndent = function () {
+	            angular.forEach([].concat(_this4.descendants, [_this4]), function (node) {
+	                var indent = 20 * (node.$level - 1);
+	                node.expandableCells.css({
+	                    'text-indent': indent + 'px'
+	                });
+	            });
+	        };
+
 	        this.shiftUp = function () {
 	            if (_this4.levelIndex < 1) {
 	                return;
@@ -1374,6 +1403,33 @@
 	                target = treeTable.get(_this4.levelIndex + 1);
 	            }
 	            _this4.exchange(target);
+	        };
+
+	        this.upgrade = function () {
+	            var target = _this4.$parent,
+	                parent = _this4.$parent,
+	                grandpa = treeTable,
+	                index = target.levelIndex;
+	            if (!parent) {
+	                return;
+	            }
+	            if (parent.$parent) {
+	                grandpa = parent.$parent;
+	            }
+	            _this4.$el.insertBefore(target.$el);
+	            _this4.$level--;
+	            _.remove(parent.$children, function (node) {
+	                return node === _this4;
+	            });
+	            grandpa.$children.splice(index, 0, _this4);
+	            _this4.$parent = parent.$parent || undefined;
+	            angular.forEach(_this4.descendants, function (node) {
+	                node.updatePosition();
+	                node.$level--;
+	            });
+	            _this4.reIndent();
+	            grandpa.refreshLevelNum();
+	            treeTable.reIndex();
 	        };
 	    };
 
@@ -1441,6 +1497,14 @@
 
 	        this.shiftDown = function () {
 	            $node.shiftDown();
+	        };
+
+	        this.upgrade = function () {
+	            $node.upgrade();
+	        };
+
+	        this.degrade = function () {
+	            $node.degrade();
 	        };
 	    };
 
