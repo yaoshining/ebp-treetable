@@ -513,6 +513,18 @@ class TreeTableNodeAdapter {
                 get: () => {
                     return $node.levelNum;
                 }
+            },
+            parent: {
+                get: () => {
+                    return $node.$parent.adapter;
+                }
+            },
+            children: {
+                get: () => {
+                    return _.map($node.$children, node => {
+                        return node.adapter;
+                    });
+                }
             }
         });
 

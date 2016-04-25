@@ -210,6 +210,13 @@ class TreeTableAdapter {
                         return node.adapter;
                     });
                 }
+            },
+            children: {
+                get: () => {
+                    return treeTable.$children.map(node => {
+                        return node.adapter;
+                    });
+                }
             }
         });
         

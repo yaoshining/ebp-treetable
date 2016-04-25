@@ -758,6 +758,13 @@
 	                        return node.adapter;
 	                    });
 	                }
+	            },
+	            children: {
+	                get: function get() {
+	                    return treeTable.$children.map(function (node) {
+	                        return node.adapter;
+	                    });
+	                }
 	            }
 	        });
 
@@ -1450,6 +1457,18 @@
 	            levelNum: {
 	                get: function get() {
 	                    return $node.levelNum;
+	                }
+	            },
+	            parent: {
+	                get: function get() {
+	                    return $node.$parent.adapter;
+	                }
+	            },
+	            children: {
+	                get: function get() {
+	                    return _.map($node.$children, function (node) {
+	                        return node.adapter;
+	                    });
 	                }
 	            }
 	        });
