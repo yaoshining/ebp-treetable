@@ -1084,7 +1084,7 @@
 	                    }
 	                });
 	                if (!node.isParent) {
-	                    handler.css('visibility', 'hidden');
+	                    handler.addClass('trans');
 	                }
 	                _this2.expand = expandNodes;
 	                if (_this2.expandableCells instanceof $) {
@@ -1100,6 +1100,7 @@
 	            if (!this.loaded) {
 	                treeTable.retrieve(this);
 	                this.checked = false;
+	                this.loaded = true;
 	            }
 	            angular.forEach(this.$children, function (node) {
 	                node.$el.removeClass('hidden');
@@ -1170,6 +1171,7 @@
 	        var adapter = $injector.instantiate(TreeTableNodeAdapter, { $node: this, $scope: $scope });
 	        var level = $scope.level;
 	        var parent = $scope.$parent.$node;
+	        var loaded = false;
 	        Object.defineProperties(this, {
 	            data: {
 	                get: function get() {
@@ -1186,7 +1188,10 @@
 	            },
 	            loaded: {
 	                get: function get() {
-	                    return angular.isArray(_this4.$children) && _this4.$children.length > 0;
+	                    return loaded;
+	                },
+	                set: function set(state) {
+	                    return loaded = !!state;
 	                }
 	            },
 	            $parent: {
@@ -1224,7 +1229,11 @@
 	                    return _this4.data.isParent;
 	                },
 	                set: function set(state) {
-	                    _this4.expandHandlers.css('visibility', state ? 'visible' : 'hidden');
+	                    if (state) {
+	                        _this4.expandHandlers.removeClass('trans');
+	                    } else {
+	                        _this4.expandHandlers.addClass('trans');
+	                    }
 	                    _this4.data.isParent = state;
 	                }
 	            },
@@ -1258,7 +1267,7 @@
 	            },
 	            descendants: {
 	                get: function get() {
-	                    var children = _this4.$children || [];
+	                    var children = [].concat(_this4.$children || []);
 	                    angular.forEach(children, function (node) {
 	                        children.push.apply(children, _toConsumableArray(node.descendants));
 	                    });
@@ -1421,47 +1430,67 @@
 	            if (!parent) {
 	                return;
 	            }
-	            var index = target.levelIndex + 1;
-	            if (parent.$parent) {
-	                grandpa = parent.$parent;
+	            if (degrade.apply(undefined, [parent, _this4.levelIndex].concat(_toConsumableArray(_.filter(parent.$children, function (node) {
+	                return node.levelIndex > _this4.levelIndex;
+	            }))))) {
+	                var index = target.levelIndex + 1;
+	                if (parent.$parent) {
+	                    grandpa = parent.$parent;
+	                }
+	                _this4.$level--;
+	                _.remove(parent.$children, function (node) {
+	                    return node === _this4;
+	                });
+	                grandpa.$children.splice(index, 0, _this4);
+	                _this4.$parent = parent.$parent || undefined;
+	                angular.forEach(_this4.descendants, function (node) {
+	                    node.updatePosition();
+	                    node.$level--;
+	                });
+	                _this4.reIndent();
+	                grandpa.refreshLevelNum();
+	                treeTable.reIndex();
+	                _this4.isParent = true;
+	                _this4.$el.addClass('open');
 	            }
-	            _this4.$level--;
-	            _.remove(parent.$children, function (node) {
-	                return node === _this4;
-	            });
-	            grandpa.$children.splice(index, 0, _this4);
-	            _this4.$parent = parent.$parent || undefined;
-	            angular.forEach(_this4.descendants, function (node) {
-	                node.updatePosition();
-	                node.$level--;
-	            });
-	            _this4.reIndent();
-	            grandpa.refreshLevelNum();
-	            treeTable.reIndex();
 	        };
 
 	        this.degrade = function () {
-	            if (_this4.levelIndex < 1) {
-	                return false;
-	            }
 	            var parent = _this4.$parent || treeTable,
 	                prev = parent.get(_this4.levelIndex - 1);
-	            _this4.$level++;
-	            _.remove(parent.$children, function (node) {
-	                return node === _this4;
-	            });
-	            prev.$children = prev.$children || [];
-	            prev.$children.push(_this4);
-	            _this4.$parent = prev;
-	            angular.forEach(_this4.descendants, function (node) {
-	                node.updatePosition();
-	                node.$level++;
-	            });
-	            _this4.reIndent();
-	            parent.refreshLevelNum();
-	            treeTable.reIndex();
-	            prev.$el.addClass('open');
+	            if (degrade(parent, _this4.levelIndex - 1, _this4)) {
+	                _this4.reIndent();
+	                parent.refreshLevelNum();
+	                treeTable.reIndex();
+	                prev.$el.addClass('open');
+	            }
 	        };
+
+	        function degrade(parent, index) {
+	            if (index < 0) {
+	                return false;
+	            }
+	            var prev = parent.get(index);
+
+	            for (var _len = arguments.length, nodes = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+	                nodes[_key - 2] = arguments[_key];
+	            }
+
+	            angular.forEach(nodes, function (node) {
+	                node.$level++;
+	                _.remove(parent.$children, function (n) {
+	                    return n === node;
+	                });
+	                prev.$children = prev.$children || [];
+	                prev.$children.push(node);
+	                node.$parent = prev;
+	                angular.forEach(node.descendants, function (node) {
+	                    node.updatePosition();
+	                    node.$level++;
+	                });
+	            });
+	            return true;
+	        }
 	    };
 
 	    var TreeTableNodeAdapter = function TreeTableNodeAdapter($node, $scope) {

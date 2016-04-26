@@ -220,6 +220,8 @@ $ebp-tt-default-col-width: 7em;
 
 [ebp-treetable-node] {
   .ebp-tt-expand-handler {
+    transition: opacity .5s;
+    will-change: opacity;
     &:before {
       content: '\f196';
       font: normal normal normal 18px/18px FontAwesome;
@@ -229,6 +231,10 @@ $ebp-tt-default-col-width: 7em;
       top: 2px;
       margin-right: 5px;
       cursor: pointer;
+    }
+    &.trans {
+      visibility: hidden;
+      opacity: 0;
     }
   }
   &.open {
