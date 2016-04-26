@@ -1153,7 +1153,7 @@
 	        return EbpTreeTableProgressbar;
 	    }();
 
-	    var EbpTreeTableNodeController = function EbpTreeTableNodeController($injector, $scope, $element) {
+	    var EbpTreeTableNodeController = function EbpTreeTableNodeController($injector, $scope, $element, $timeout) {
 	        'ngInject';
 
 	        var _this4 = this;
@@ -1181,7 +1181,7 @@
 	                    return level;
 	                },
 	                set: function set(newLevel) {
-	                    level = newLevel;
+	                    return level = newLevel;
 	                }
 	            },
 	            loaded: {
@@ -1194,7 +1194,7 @@
 	                    return parent;
 	                },
 	                set: function set(p) {
-	                    parent = p;
+	                    return parent = p;
 	                }
 	            },
 	            levelIndex: {
@@ -1294,7 +1294,7 @@
 
 	        this.refreshLevelNum = function () {
 	            angular.forEach([].concat(_this4.descendants, [_this4]), function (node) {
-	                node.$el.find('.ebp-tt-level-cell').text(_this4.levelNum);
+	                node.$el.find('.ebp-tt-level-cell').text(node.levelNum);
 	            });
 	        };
 
@@ -1383,9 +1383,11 @@
 	        this.reIndent = function () {
 	            angular.forEach([].concat(_this4.descendants, [_this4]), function (node) {
 	                var indent = 20 * (node.$level - 1);
-	                node.expandableCells.css({
-	                    'text-indent': indent + 'px'
-	                });
+	                $timeout(function () {
+	                    node.expandableCells.css({
+	                        'text-indent': indent + 'px'
+	                    });
+	                }, 0);
 	            });
 	        };
 
@@ -1415,15 +1417,14 @@
 	        this.upgrade = function () {
 	            var target = _this4.$parent,
 	                parent = _this4.$parent,
-	                grandpa = treeTable,
-	                index = target.levelIndex;
+	                grandpa = treeTable;
 	            if (!parent) {
 	                return;
 	            }
+	            var index = target.levelIndex + 1;
 	            if (parent.$parent) {
 	                grandpa = parent.$parent;
 	            }
-	            _this4.$el.insertBefore(target.$el);
 	            _this4.$level--;
 	            _.remove(parent.$children, function (node) {
 	                return node === _this4;
@@ -1437,6 +1438,29 @@
 	            _this4.reIndent();
 	            grandpa.refreshLevelNum();
 	            treeTable.reIndex();
+	        };
+
+	        this.degrade = function () {
+	            if (_this4.levelIndex < 1) {
+	                return false;
+	            }
+	            var parent = _this4.$parent || treeTable,
+	                prev = parent.get(_this4.levelIndex - 1);
+	            _this4.$level++;
+	            _.remove(parent.$children, function (node) {
+	                return node === _this4;
+	            });
+	            prev.$children = prev.$children || [];
+	            prev.$children.push(_this4);
+	            _this4.$parent = prev;
+	            angular.forEach(_this4.descendants, function (node) {
+	                node.updatePosition();
+	                node.$level++;
+	            });
+	            _this4.reIndent();
+	            parent.refreshLevelNum();
+	            treeTable.reIndex();
+	            prev.$el.addClass('open');
 	        };
 	    };
 
@@ -1469,6 +1493,11 @@
 	                    return _.map($node.$children, function (node) {
 	                        return node.adapter;
 	                    });
+	                }
+	            },
+	            levelIndex: {
+	                get: function get() {
+	                    return $node.levelIndex;
 	                }
 	            }
 	        });
@@ -1511,19 +1540,19 @@
 	        };
 
 	        this.shiftUp = function () {
-	            $node.shiftUp();
+	            return $node.shiftUp();
 	        };
 
 	        this.shiftDown = function () {
-	            $node.shiftDown();
+	            return $node.shiftDown();
 	        };
 
 	        this.upgrade = function () {
-	            $node.upgrade();
+	            return $node.upgrade();
 	        };
 
 	        this.degrade = function () {
-	            $node.degrade();
+	            return $node.degrade();
 	        };
 	    };
 

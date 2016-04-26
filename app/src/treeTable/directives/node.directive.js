@@ -222,7 +222,7 @@ class EbpTreeTableProgressbar {
 }
 
 class EbpTreeTableNodeController {
-    constructor($injector, $scope, $element) {
+    constructor($injector, $scope, $element, $timeout) {
         'ngInject';
         let treeTable = $scope.$ebpTreeTable;
         let checked = false;
@@ -236,17 +236,11 @@ class EbpTreeTableNodeController {
         let parent = $scope.$parent.$node;
         Object.defineProperties(this, {
             data: {
-                get: () => {
-                    return $scope.node;
-                }
+                get: () => $scope.node
             },
             $level: {
-                get: () => {
-                    return level;
-                },
-                set: (newLevel) => {
-                    level = newLevel;
-                }
+                get: () => level,
+                set: newLevel => level = newLevel
             },
             loaded: {
                 get: () => {
@@ -254,12 +248,8 @@ class EbpTreeTableNodeController {
                 }
             },
             $parent: {
-                get: () => {
-                    return parent;
-                },
-                set: (p) => {
-                    parent = p;
-                }
+                get: () => parent,
+                set: p => parent = p
             },
             levelIndex: {
                 get: () => {
@@ -284,18 +274,14 @@ class EbpTreeTableNodeController {
                 }
             },
             isParent: {
-                get: () => {
-                    return this.data.isParent;
-                },
-                set: (state) => {
+                get: () => this.data.isParent,
+                set: state => {
                     this.expandHandlers.css('visibility', state?'visible':'hidden');
                     this.data.isParent = state;
                 }
             },
             checked: {
-                get: () => {
-                    return checked;
-                },
+                get: () => checked,
                 set: state => {
                     checked = state;
                     let checkboxes = $('.ebp-tt-checkbox > input', $element);
@@ -316,9 +302,7 @@ class EbpTreeTableNodeController {
                 }
             },
             adapter: {
-                get: () => {
-                    return adapter;
-                }
+                get: () => adapter
             },
             descendants: {
                 get: () => {
@@ -356,7 +340,7 @@ class EbpTreeTableNodeController {
 
         this.refreshLevelNum = () => {
             angular.forEach([].concat(this.descendants, [this]), node => {
-                node.$el.find('.ebp-tt-level-cell').text(this.levelNum);
+                node.$el.find('.ebp-tt-level-cell').text(node.levelNum);
             });
         };
 
@@ -365,11 +349,9 @@ class EbpTreeTableNodeController {
             $scope.$destroy();
         };
 
-        this.get = (i) => {
-            return this.$children[i];
-        };
+        this.get = i => this.$children[i];
 
-        this.exchange = (target) => {
+        this.exchange = target => {
             if(!target || angular.equals(this, target)) {
                 return;
             }
@@ -441,9 +423,11 @@ class EbpTreeTableNodeController {
         this.reIndent = () => {
             angular.forEach([].concat(this.descendants, [this]), node => {
                 let indent = 20 * (node.$level - 1);
-                node.expandableCells.css({
-                    'text-indent': indent + 'px'
-                });
+                $timeout(() => {
+                    node.expandableCells.css({
+                        'text-indent': indent + 'px'
+                    });
+                }, 0);
             });
         };
 
@@ -473,15 +457,14 @@ class EbpTreeTableNodeController {
         this.upgrade = () => {
             let target = this.$parent,
                 parent = this.$parent,
-                grandpa = treeTable,
-                index = target.levelIndex;
+                grandpa = treeTable;
             if(!parent) {
                 return;
             }
+            let index = target.levelIndex + 1;
             if(parent.$parent) {
                 grandpa = parent.$parent;
             }
-            this.$el.insertBefore(target.$el);
             this.$level--;
             _.remove(parent.$children, node => node === this);
             grandpa.$children.splice(index, 0 ,this);
@@ -494,6 +477,27 @@ class EbpTreeTableNodeController {
             grandpa.refreshLevelNum();
             treeTable.reIndex();
         };
+
+        this.degrade = () => {
+            if(this.levelIndex < 1) {
+                return false;
+            }
+            let parent = this.$parent || treeTable,
+                prev = parent.get(this.levelIndex - 1);
+            this.$level++;
+            _.remove(parent.$children, node => node === this);
+            prev.$children = prev.$children || [];
+            prev.$children.push(this);
+            this.$parent = prev;
+            angular.forEach(this.descendants, node => {
+                node.updatePosition();
+                node.$level++;
+            });
+            this.reIndent();
+            parent.refreshLevelNum();
+            treeTable.reIndex();
+            prev.$el.addClass('open');
+        };
     }
 
 }
@@ -505,26 +509,21 @@ class TreeTableNodeAdapter {
         let treeTable = $scope.$ebpTreeTable;
         Object.defineProperties(this, {
             model: {
-                get: () => {
-                    return $node.data;
-                }
+                get: () => $node.data
             },
             levelNum: {
-                get: () => {
-                    return $node.levelNum;
-                }
+                get: () => $node.levelNum
             },
             parent: {
-                get: () => {
-                    return $node.$parent.adapter;
-                }
+                get: () => $node.$parent.adapter
             },
             children: {
                 get: () => {
-                    return _.map($node.$children, node => {
-                        return node.adapter;
-                    });
+                    return _.map($node.$children, node => node.adapter);
                 }
+            },
+            levelIndex: {
+                get: () => $node.levelIndex
             }
         });
 
@@ -543,16 +542,12 @@ class TreeTableNodeAdapter {
         };
 
         this.remove = () => {
-            let result = _.remove(treeTable.data, (item) => {
-                return item.id === this.model.id;
-            });
+            let result = _.remove(treeTable.data, item => item.id === this.model.id);
             if(result.length > 0) {
                 $node.removeChildren();
                 let parent = $node.$parent;
                 if(parent) {
-                    _.remove(parent.$children, (item) => {
-                        return item === $node;
-                    });
+                    _.remove(parent.$children, item => item === $node);
                     parent.refreshLevelNum();
                     if(parent.$children < 1) {
                         parent.isParent = false;
@@ -565,22 +560,15 @@ class TreeTableNodeAdapter {
             }
         };
 
-        this.shiftUp = () => {
-            $node.shiftUp();
-        };
+        this.shiftUp = () => $node.shiftUp();
 
-        this.shiftDown = () => {
-            $node.shiftDown();
-        };
+        this.shiftDown = () => $node.shiftDown();
 
-        this.upgrade = () => {
-            $node.upgrade();
-        };
+        this.upgrade = () => $node.upgrade();
 
-        this.degrade = () => {
-            $node.degrade();
-        };
+        this.degrade = () => $node.degrade();
     }
+
 }
 
 export default NodeDirectiveFactory;

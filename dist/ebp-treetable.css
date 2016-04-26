@@ -65,7 +65,10 @@
       border: #E6E6E6 solid;
       border-width: 0 0 1px 0;
       white-space: nowrap;
-      overflow: hidden; }
+      overflow: hidden;
+      -webkit-transition: text-indent 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+              transition: text-indent 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      will-change: text-indent; }
       .ebp-tt-content-wrapper table td:last-child {
         border-right-width: 0; }
       .ebp-tt-content-wrapper table td.ebp-tt-func-cell {

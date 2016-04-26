@@ -106,9 +106,7 @@ class TreeTableController {
         let _checkedNodes = [];
         this.$children = [];
         this.remove = node => {
-            _.remove(this.data, (item) => {
-                return item.id === node.id;
-            });
+            _.remove(this.data, (item) => item.id === node.id);
         };
 
         this.checkAll = state => {
@@ -143,20 +141,14 @@ class TreeTableController {
 
         Object.defineProperties(this, {
             $el: {
-                get: () => {
-                    return $element;
-                }
+                get: () => $element
             },
             checkedNodes: {
-                get: () => {
-                    return _checkedNodes;
-                }
+                get: () => _checkedNodes
             }
         });
 
-        this.get = (i) => {
-            return this.$children[i];
-        };
+        this.get = i => this.$children[i];
 
         this.retrieve = node => {
             let parentId = node?node.data.id:0;
@@ -205,18 +197,10 @@ class TreeTableAdapter {
         'ngInject';
         Object.defineProperties(this, {
             checkedNodes: {
-                get: () => {
-                    return treeTable.checkedNodes.map(node => {
-                        return node.adapter;
-                    });
-                }
+                get: () => treeTable.checkedNodes.map(node => node.adapter)
             },
             children: {
-                get: () => {
-                    return treeTable.$children.map(node => {
-                        return node.adapter;
-                    });
-                }
+                get: () => treeTable.$children.map(node => node.adapter)
             }
         });
         

@@ -72,7 +72,9 @@ $ebp-tt-default-col-width: 7em;
       border-width: 0 0 1px 0;
       white-space: nowrap;
       overflow: hidden;
-      &:last-child     {
+      transition: text-indent .5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      will-change: text-indent;
+      &:last-child {
         border-right-width: 0;
       }
 
