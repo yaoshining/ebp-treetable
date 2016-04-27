@@ -1051,11 +1051,7 @@
 	                    elem.prepend(checkHandler);
 	                    checkbox.on({
 	                        change: function change() {
-	                            var state = checkbox.is(':checked');
-	                            // $scope.$broadcast('ebp-tt-node-check', state);
-	                            angular.forEach([].concat(_this2.descendants, [_this2]), function (node) {
-	                                node.checked = state;
-	                            });
+	                            checkbox.is(':checked');
 	                        }
 	                    });
 	                    checkHandler.click(function (event) {
@@ -1254,9 +1250,6 @@
 	                        });
 	                        $element.removeClass('checked');
 	                        checkboxes.prop('checked', false);
-	                    }
-	                    if (_this4.$parent) {
-	                        _this4.$parent.checked = _.every(_this4.$parent.$children, 'checked');
 	                    }
 	                }
 	            },
@@ -1528,11 +1521,6 @@
 	                    return _.map($node.$children, function (node) {
 	                        return node.adapter;
 	                    });
-	                }
-	            },
-	            levelIndex: {
-	                get: function get() {
-	                    return $node.levelIndex;
 	                }
 	            }
 	        });

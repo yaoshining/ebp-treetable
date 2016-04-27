@@ -1,2 +1,2 @@
-# ebp-ui
-为EBP平台提供UI级组件,提高开发效率.
+# ebp-treetable
+基于EBP平台的树形表格组件

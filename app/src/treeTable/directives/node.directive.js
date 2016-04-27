@@ -128,11 +128,7 @@ function renderCell(el, treeTable, node, $compile, $scope) {
             elem.prepend(checkHandler);
             checkbox.on({
                 change: () => {
-                    let state = checkbox.is(':checked');
-                    // $scope.$broadcast('ebp-tt-node-check', state);
-                    angular.forEach([].concat(this.descendants, [this]), node => {
-                        node.checked = state;
-                    });
+                    checkbox.is(':checked');
                 }
             });
             checkHandler.click((event) => event.stopPropagation());
@@ -300,9 +296,6 @@ class EbpTreeTableNodeController {
                         });
                         $element.removeClass('checked');
                         checkboxes.prop('checked', false);
-                    }
-                    if(this.$parent) {
-                        this.$parent.checked = _.every(this.$parent.$children, 'checked');
                     }
                 }
             },
@@ -549,9 +542,6 @@ class TreeTableNodeAdapter {
                 get: () => {
                     return _.map($node.$children, node => node.adapter);
                 }
-            },
-            levelIndex: {
-                get: () => $node.levelIndex
             }
         });
 

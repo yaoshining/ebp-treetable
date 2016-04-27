@@ -79,8 +79,8 @@ class TreeTableDemoController {
         };
 
         $scope.approval = function(node) {
-            node.shiftUp();
-            // node.upgrade();
+            // node.shiftUp();
+            node.upgrade();
         };
 
         $scope.adjust = function(node) {
