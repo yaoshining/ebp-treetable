@@ -1095,7 +1095,6 @@
 	        function expandNodes() {
 	            if (!this.loaded) {
 	                treeTable.retrieve(this);
-	                this.checked = false;
 	                this.loaded = true;
 	            }
 	            angular.forEach(this.$children, function (node) {
