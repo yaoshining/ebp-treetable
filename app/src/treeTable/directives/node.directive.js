@@ -482,8 +482,10 @@ class EbpTreeTableNodeController {
                 this.reIndent();
                 grandpa.refreshLevelNum();
                 treeTable.reIndex();
-                this.isParent = true;
-                this.$el.addClass('open');
+                if(angular.isArray(this.$children) && this.$children.length > 0) {
+                    this.isParent = true;
+                    this.$el.addClass('open');
+                }
             }
         };
 
@@ -535,7 +537,13 @@ class TreeTableNodeAdapter {
                 get: () => $node.levelNum
             },
             parent: {
-                get: () => $node.$parent.adapter
+                get: () => {
+                    if($node.$parent) {
+                        return $node.$parent.adapter;
+                    } else {
+                        return null;
+                    }
+                }
             },
             children: {
                 get: () => {

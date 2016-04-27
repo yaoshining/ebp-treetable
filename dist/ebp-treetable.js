@@ -1450,8 +1450,10 @@
 	                _this4.reIndent();
 	                grandpa.refreshLevelNum();
 	                treeTable.reIndex();
-	                _this4.isParent = true;
-	                _this4.$el.addClass('open');
+	                if (angular.isArray(_this4.$children) && _this4.$children.length > 0) {
+	                    _this4.isParent = true;
+	                    _this4.$el.addClass('open');
+	                }
 	            }
 	        };
 
@@ -1514,7 +1516,11 @@
 	            },
 	            parent: {
 	                get: function get() {
-	                    return $node.$parent.adapter;
+	                    if ($node.$parent) {
+	                        return $node.$parent.adapter;
+	                    } else {
+	                        return null;
+	                    }
 	                }
 	            },
 	            children: {
