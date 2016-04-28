@@ -769,7 +769,7 @@
 	        });
 
 	        this.insert = function (index, newNode) {
-	            if (!newNode || treeTable.$children && index >= treeTable.$children.length) {
+	            if (!newNode || treeTable.$children && index > treeTable.$children.length) {
 	                return;
 	            }
 	            treeTable.add(index, null, newNode);
@@ -1550,10 +1550,13 @@
 	                        return item === $node;
 	                    });
 	                    parent.refreshLevelNum();
-	                    if (parent.$children < 1) {
+	                    if (parent.$children.length < 1) {
 	                        parent.isParent = false;
 	                    }
 	                } else {
+	                    _.remove(treeTable.$children, function (item) {
+	                        return item === $node;
+	                    });
 	                    treeTable.refreshLevelNum();
 	                }
 	                $node.$destroy();

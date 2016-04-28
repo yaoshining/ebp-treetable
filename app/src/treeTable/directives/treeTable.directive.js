@@ -205,7 +205,7 @@ class TreeTableAdapter {
         });
         
         this.insert = (index, newNode) => {
-            if(!newNode || treeTable.$children && index >= treeTable.$children.length) {
+            if(!newNode || treeTable.$children && index > treeTable.$children.length) {
                 return;
             }
             treeTable.add(index, null, newNode);

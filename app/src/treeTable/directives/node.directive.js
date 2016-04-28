@@ -566,10 +566,11 @@ class TreeTableNodeAdapter {
                 if(parent) {
                     _.remove(parent.$children, item => item === $node);
                     parent.refreshLevelNum();
-                    if(parent.$children < 1) {
+                    if(parent.$children.length < 1) {
                         parent.isParent = false;
                     }
                 } else {
+                    _.remove(treeTable.$children, item => item === $node);
                     treeTable.refreshLevelNum();
                 }
                 $node.$destroy();
