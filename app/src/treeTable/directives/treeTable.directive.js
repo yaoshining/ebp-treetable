@@ -145,6 +145,12 @@ class TreeTableController {
             },
             checkedNodes: {
                 get: () => _checkedNodes
+            },
+            $first: {
+                get: () => this.$children[0]
+            },
+            $last: {
+                get: () => this.$children[this.$children.length - 1]
             }
         });
 
@@ -182,7 +188,11 @@ class TreeTableController {
             if(node) {
                 elems.insertAfter(prevElem);
             } else {
-                elems.insertBefore(prevElem);
+                if(prevElem.length > 0) {
+                    elems.insertBefore(prevElem);
+                } else {
+                    elems.insertAfter($element.find('[ebp-treetable-node]:last'));
+                }
             }
             this.reIndex();
         };

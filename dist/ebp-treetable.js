@@ -691,6 +691,16 @@
 	                get: function get() {
 	                    return _checkedNodes;
 	                }
+	            },
+	            $first: {
+	                get: function get() {
+	                    return _this.$children[0];
+	                }
+	            },
+	            $last: {
+	                get: function get() {
+	                    return _this.$children[_this.$children.length - 1];
+	                }
 	            }
 	        });
 
@@ -740,7 +750,11 @@
 	            if (node) {
 	                elems.insertAfter(prevElem);
 	            } else {
-	                elems.insertBefore(prevElem);
+	                if (prevElem.length > 0) {
+	                    elems.insertBefore(prevElem);
+	                } else {
+	                    elems.insertAfter($element.find('[ebp-treetable-node]:last'));
+	                }
 	            }
 	            _this.reIndex();
 	        };
