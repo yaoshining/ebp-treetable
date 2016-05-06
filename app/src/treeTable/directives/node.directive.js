@@ -1,7 +1,6 @@
 /**
  * Created by yaoshining on 16/3/14.
  */
-
 function linkFunc(scope, elem) {
 }
 
@@ -17,7 +16,7 @@ function NodeDirectiveFactory() {
     return directive;
 }
 
-function initNode($scope, $element, $compile, $timeout) {
+function initNode($scope, $element, $compile, $timeout, $q) {
     'ngInject';
     let node = $scope.node;
     let treeTable = $scope.$ebpTreeTable;
@@ -38,7 +37,8 @@ function initNode($scope, $element, $compile, $timeout) {
             treeTable,
             node,
             $compile,
-            $scope
+            $scope,
+            $q
         ]);
     };
     $timeout(this.render, 0);
@@ -77,7 +77,7 @@ function initNode($scope, $element, $compile, $timeout) {
     });
 }
 
-function renderCell(el, treeTable, node, $compile, $scope) {
+function renderCell(el, treeTable, node, $compile, $scope, $q) {
     let colDefs = treeTable.colDefs;
     angular.forEach(colDefs, (col) => {
         let compiled = _.template(`<td><%- node[col.name]%></td>`);
@@ -128,7 +128,7 @@ function renderCell(el, treeTable, node, $compile, $scope) {
             elem.prepend(checkHandler);
             checkbox.on({
                 change: () => {
-                    checkbox.is(':checked');
+                    this.checked = checkbox.is(':checked');
                 }
             });
             checkHandler.click((event) => event.stopPropagation());
@@ -150,7 +150,7 @@ function renderCell(el, treeTable, node, $compile, $scope) {
                 if(el.is('.open')) {
                     collapseNodes(el, this.$children);
                 } else {
-                    expandNodes.apply(this);
+                    this.expand();
                 }
             });
             if(!node.isParent) {
@@ -167,14 +167,20 @@ function renderCell(el, treeTable, node, $compile, $scope) {
     });
 
     function expandNodes() {
-        if(!this.loaded) {
-            treeTable.retrieve(this);
+        let deferred = $q.defer();
+        if(this.isParent && !this.loaded) {
+            treeTable.retrieve(this).then(() => {
+                deferred.resolve();
+            });
             this.loaded = true;
+        } else {
+            angular.forEach(this.$children, (node) => {
+                node.$el.removeClass('hidden');
+            });
+            deferred.resolve();
         }
-        angular.forEach(this.$children, (node) => {
-            node.$el.removeClass('hidden');
-        });
         el.addClass('open');
+        return deferred.promise;
     }
 
     function collapseNodes(el, nodes) {
@@ -478,17 +484,24 @@ class EbpTreeTableNodeController {
                     this.isParent = true;
                     this.$el.addClass('open');
                 }
+                if(parent.$children.length < 1) {
+                    parent.isParent = false;
+                }
             }
         };
 
         this.degrade = () => {
             let parent = this.$parent || treeTable,
                 prev = parent.get(this.levelIndex - 1);
-            if(degrade(parent, this.levelIndex - 1, this)) {
-                this.reIndent();
-                parent.refreshLevelNum();
-                treeTable.reIndex();
-                prev.$el.addClass('open');
+            if(prev) {
+                prev.expand().then(() => {
+                    if(degrade(parent, this.levelIndex - 1, this)) {
+                        this.reIndent();
+                        parent.refreshLevelNum();
+                        treeTable.reIndex();
+                        prev.$el.addClass('open');
+                    }
+                });
             }
         };
 
@@ -510,8 +523,10 @@ class EbpTreeTableNodeController {
                     node.$level++;
                 });
             });
+            prev.isParent = !!nodes.length;
             return true;
         }
+
     }
 
 }

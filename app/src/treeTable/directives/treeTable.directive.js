@@ -19,7 +19,7 @@ function TreeTableDirectiveFactory($templateRequest, $compile) {
         return {
             post: (scope, elem, attrs, treeTable) => {
                 elem.addClass('ebp-tt-container');
-                tplLoader.then((tpl) => {
+                tplLoader.then(tpl => {
                     elem.append($compile(tpl)(scope));
                     let tableWidth = elem.find('table').width();
                     let containerWidth = elem.width();
@@ -93,7 +93,7 @@ function nodesGenerator(data, $scope, $compile, level, index) {
 
 class TreeTableController {
 
-    constructor($scope, $attrs, defaultSettings, $element, $injector, $compile, $parse) {
+    constructor($scope, $attrs, defaultSettings, $element, $injector, $compile, $parse, $q) {
         'ngInject';
         let settingsModel = $parse($attrs[directiveNames.ebpTreeTable]),
             settings = settingsModel.apply(null, [$scope]);
@@ -114,7 +114,7 @@ class TreeTableController {
         };
 
         this.render = () => {
-            this.retrieve().$promise.then(data => {
+            this.retrieve().then(data => {
                 this.data = data;
                 $injector.invoke(initTreeTable, this, {
                     $element,
@@ -158,10 +158,11 @@ class TreeTableController {
 
         this.retrieve = node => {
             let parentId = node?node.data.id:0;
+            let deferred = $q.defer();
             if(!this.$readRepo) {
-                return false;
+                deferred.reject();
             } else {
-                return this.$readRepo.query({
+                this.$readRepo.query({
                     id: parentId
                 }, data => {
                     if(node) {
@@ -170,8 +171,10 @@ class TreeTableController {
                         elems.insertAfter(node.$el);
                         this.reIndex();
                     }
+                    deferred.resolve(data);
                 });
             }
+            return deferred.promise;
         };
 
         this.add = (position, node, ...childData) => {
@@ -191,7 +194,7 @@ class TreeTableController {
                 if(prevElem.length > 0) {
                     elems.insertBefore(prevElem);
                 } else {
-                    elems.insertAfter($element.find('[ebp-treetable-node]:last'));
+                    elems.appendTo($element.find('.ebp-tt-content-wrapper tbody'));
                 }
             }
             this.reIndex();

@@ -628,7 +628,7 @@
 	        return elems;
 	    }
 
-	    var TreeTableController = function TreeTableController($scope, $attrs, defaultSettings, $element, $injector, $compile, $parse) {
+	    var TreeTableController = function TreeTableController($scope, $attrs, defaultSettings, $element, $injector, $compile, $parse, $q) {
 	        'ngInject';
 
 	        var _this = this;
@@ -656,7 +656,7 @@
 	        };
 
 	        this.render = function () {
-	            _this.retrieve().$promise.then(function (data) {
+	            _this.retrieve().then(function (data) {
 	                _this.data = data;
 	                $injector.invoke(initTreeTable, _this, {
 	                    $element: $element,
@@ -710,10 +710,11 @@
 
 	        this.retrieve = function (node) {
 	            var parentId = node ? node.data.id : 0;
+	            var deferred = $q.defer();
 	            if (!_this.$readRepo) {
-	                return false;
+	                deferred.reject();
 	            } else {
-	                return _this.$readRepo.query({
+	                _this.$readRepo.query({
 	                    id: parentId
 	                }, function (data) {
 	                    if (node) {
@@ -724,8 +725,10 @@
 	                        elems.insertAfter(node.$el);
 	                        _this.reIndex();
 	                    }
+	                    deferred.resolve(data);
 	                });
 	            }
+	            return deferred.promise;
 	        };
 
 	        this.add = function (position, node) {
@@ -753,7 +756,7 @@
 	                if (prevElem.length > 0) {
 	                    elems.insertBefore(prevElem);
 	                } else {
-	                    elems.insertAfter($element.find('[ebp-treetable-node]:last'));
+	                    elems.appendTo($element.find('.ebp-tt-content-wrapper tbody'));
 	                }
 	            }
 	            _this.reIndex();
@@ -937,7 +940,6 @@
 	    /**
 	     * Created by yaoshining on 16/3/14.
 	     */
-
 	    function linkFunc(scope, elem) {}
 
 	    function NodeDirectiveFactory() {
@@ -952,7 +954,7 @@
 	        return directive;
 	    }
 
-	    function initNode($scope, $element, $compile, $timeout) {
+	    function initNode($scope, $element, $compile, $timeout, $q) {
 	        'ngInject';
 
 	        var _this = this;
@@ -970,7 +972,7 @@
 	                levelNum: levelNum
 	            }));
 	            $element.html(el);
-	            renderCell.apply(_this, [$element, treeTable, node, $compile, $scope]);
+	            renderCell.apply(_this, [$element, treeTable, node, $compile, $scope, $q]);
 	        };
 	        $timeout(this.render, 0);
 	        this.edit = function () {
@@ -1010,7 +1012,7 @@
 	        });
 	    }
 
-	    function renderCell(el, treeTable, node, $compile, $scope) {
+	    function renderCell(el, treeTable, node, $compile, $scope, $q) {
 	        var _this2 = this;
 
 	        var colDefs = treeTable.colDefs;
@@ -1065,7 +1067,7 @@
 	                    elem.prepend(checkHandler);
 	                    checkbox.on({
 	                        change: function change() {
-	                            checkbox.is(':checked');
+	                            _this2.checked = checkbox.is(':checked');
 	                        }
 	                    });
 	                    checkHandler.click(function (event) {
@@ -1090,7 +1092,7 @@
 	                    if (el.is('.open')) {
 	                        collapseNodes(el, _this2.$children);
 	                    } else {
-	                        expandNodes.apply(_this2);
+	                        _this2.expand();
 	                    }
 	                });
 	                if (!node.isParent) {
@@ -1107,14 +1109,20 @@
 	        });
 
 	        function expandNodes() {
-	            if (!this.loaded) {
-	                treeTable.retrieve(this);
+	            var deferred = $q.defer();
+	            if (this.isParent && !this.loaded) {
+	                treeTable.retrieve(this).then(function () {
+	                    deferred.resolve();
+	                });
 	                this.loaded = true;
+	            } else {
+	                angular.forEach(this.$children, function (node) {
+	                    node.$el.removeClass('hidden');
+	                });
+	                deferred.resolve();
 	            }
-	            angular.forEach(this.$children, function (node) {
-	                node.$el.removeClass('hidden');
-	            });
 	            el.addClass('open');
+	            return deferred.promise;
 	        }
 
 	        function collapseNodes(el, nodes) {
@@ -1460,17 +1468,24 @@
 	                    _this4.isParent = true;
 	                    _this4.$el.addClass('open');
 	                }
+	                if (parent.$children.length < 1) {
+	                    parent.isParent = false;
+	                }
 	            }
 	        };
 
 	        this.degrade = function () {
 	            var parent = _this4.$parent || treeTable,
 	                prev = parent.get(_this4.levelIndex - 1);
-	            if (degrade(parent, _this4.levelIndex - 1, _this4)) {
-	                _this4.reIndent();
-	                parent.refreshLevelNum();
-	                treeTable.reIndex();
-	                prev.$el.addClass('open');
+	            if (prev) {
+	                prev.expand().then(function () {
+	                    if (degrade(parent, _this4.levelIndex - 1, _this4)) {
+	                        _this4.reIndent();
+	                        parent.refreshLevelNum();
+	                        treeTable.reIndex();
+	                        prev.$el.addClass('open');
+	                    }
+	                });
 	            }
 	        };
 
@@ -1497,6 +1512,7 @@
 	                    node.$level++;
 	                });
 	            });
+	            prev.isParent = !!nodes.length;
 	            return true;
 	        }
 	    };
