@@ -82,12 +82,15 @@ class TreeTableDemoController {
         $scope.approval = function(node) {
             // node.shiftUp();
             node.upgrade();
+            // $scope.treeTable.expandAll();
         };
 
         $scope.adjust = function(node) {
             // node.shiftDown();
             node.degrade();
+            // $scope.treeTable.collapseAll();
         };
+
     }
 
 }

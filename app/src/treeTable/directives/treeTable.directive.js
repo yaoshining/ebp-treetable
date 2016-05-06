@@ -250,6 +250,13 @@ class TreeTableController {
             });
         };
 
+        this.collapseAll = () => {
+            angular.forEach(this.$children, node => {
+                if(node.isParent) {
+                    node.collapse();
+                }
+            });
+        };
     }
 
 }
@@ -275,6 +282,8 @@ class TreeTableAdapter {
         };
 
         this.expandAll = () => treeTable.expandAll();
+
+        this.collapseAll = () => treeTable.collapseAll();
     }
 
 }

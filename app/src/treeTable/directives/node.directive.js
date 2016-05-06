@@ -148,7 +148,7 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
             handler.on('click', (event) => {
                 event.stopPropagation();
                 if(el.is('.open')) {
-                    collapseNodes(el, this.$children);
+                    this.collapse();
                 } else {
                     this.expand();
                 }
@@ -157,6 +157,7 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
                 handler.addClass('trans');
             }
             this.expand = expandNodes;
+            this.collapse = collapseNodes;
             if(this.expandableCells instanceof $) {
                 this.expandableCells.add(elem);
             } else {
@@ -177,8 +178,9 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
             });
             this.loaded = true;
         } else {
-            angular.forEach(this.$children, (node) => {
-                node.$el.removeClass('hidden');
+            let nodes = recursive?this.descendants:this.$children;
+            angular.forEach(nodes, (node) => {
+                node.$el.removeClass('hidden').addClass(recursive?'open':'');
             });
             this.loaded = true;
             deferred.resolve();
@@ -187,11 +189,11 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
         return deferred.promise;
     }
 
-    function collapseNodes(el, nodes) {
-        angular.forEach(nodes, (node) => {
+    function collapseNodes() {
+        angular.forEach(this.$children, node => {
             node.$el.addClass('hidden');
             if(node.$children) {
-                collapseNodes(node.$el, node.$children);
+                node.collapse();
             }
         });
         el.removeClass('open');

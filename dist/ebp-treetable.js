@@ -814,6 +814,14 @@
 	                }
 	            });
 	        };
+
+	        this.collapseAll = function () {
+	            angular.forEach(_this.$children, function (node) {
+	                if (node.isParent) {
+	                    node.collapse();
+	                }
+	            });
+	        };
 	    };
 
 	    var TreeTableAdapter = function TreeTableAdapter(treeTable) {
@@ -847,6 +855,10 @@
 
 	        this.expandAll = function () {
 	            return treeTable.expandAll();
+	        };
+
+	        this.collapseAll = function () {
+	            return treeTable.collapseAll();
 	        };
 	    };
 
@@ -1147,7 +1159,7 @@
 	                handler.on('click', function (event) {
 	                    event.stopPropagation();
 	                    if (el.is('.open')) {
-	                        collapseNodes(el, _this2.$children);
+	                        _this2.collapse();
 	                    } else {
 	                        _this2.expand();
 	                    }
@@ -1156,6 +1168,7 @@
 	                    handler.addClass('trans');
 	                }
 	                _this2.expand = expandNodes;
+	                _this2.collapse = collapseNodes;
 	                if (_this2.expandableCells instanceof $) {
 	                    _this2.expandableCells.add(elem);
 	                } else {
@@ -1176,8 +1189,9 @@
 	                });
 	                this.loaded = true;
 	            } else {
-	                angular.forEach(this.$children, function (node) {
-	                    node.$el.removeClass('hidden');
+	                var nodes = recursive ? this.descendants : this.$children;
+	                angular.forEach(nodes, function (node) {
+	                    node.$el.removeClass('hidden').addClass(recursive ? 'open' : '');
 	                });
 	                this.loaded = true;
 	                deferred.resolve();
@@ -1186,11 +1200,11 @@
 	            return deferred.promise;
 	        }
 
-	        function collapseNodes(el, nodes) {
-	            angular.forEach(nodes, function (node) {
+	        function collapseNodes() {
+	            angular.forEach(this.$children, function (node) {
 	                node.$el.addClass('hidden');
 	                if (node.$children) {
-	                    collapseNodes(node.$el, node.$children);
+	                    node.collapse();
 	                }
 	            });
 	            el.removeClass('open');
