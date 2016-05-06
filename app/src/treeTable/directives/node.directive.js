@@ -180,6 +180,7 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
             angular.forEach(this.$children, (node) => {
                 node.$el.removeClass('hidden');
             });
+            this.loaded = true;
             deferred.resolve();
         }
         el.addClass('open');

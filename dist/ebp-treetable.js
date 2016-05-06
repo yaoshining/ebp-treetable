@@ -1144,6 +1144,7 @@
 	                angular.forEach(this.$children, function (node) {
 	                    node.$el.removeClass('hidden');
 	                });
+	                this.loaded = true;
 	                deferred.resolve();
 	            }
 	            el.addClass('open');
