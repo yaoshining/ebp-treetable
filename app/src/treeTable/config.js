@@ -10,6 +10,7 @@ export const directiveNames = {
 };
 
 export const treeTableSettings = {
+    expandAll: false,
     colDefs: [],
     events: {
         edit: angular.noop,

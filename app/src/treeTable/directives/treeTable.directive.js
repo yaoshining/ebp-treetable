@@ -47,6 +47,9 @@ function TreeTableDirectiveFactory($templateRequest, $compile) {
 }
 
 function initSettings(settings) {
+    this.settings = {
+        expandAll: settings.expandAll
+    };
     this.colDefs = _.sortBy(settings.colDefs || [], function(col) {
         return col.index;
     });
@@ -66,7 +69,9 @@ function initTreeTable($element, $compile, $scope) {
     let wrapper = $element.find('.ebp-tt-content-wrapper');
     let tbody = wrapper.find('tbody');
 
-    tbody.append(nodesGenerator(this.data, $scope, $compile, 1));
+    tbody.append(nodesGenerator(this.data, $scope, $compile, 1, {
+        expand: this.settings.expandAll
+    }));
 
     this.hideIndexCol = () => {
         $element.find('.ebp-tt-index-cell,.ebp-tt-index-col').hide();
@@ -78,11 +83,11 @@ function initTreeTable($element, $compile, $scope) {
     };
 }
 
-function nodesGenerator(data, $scope, $compile, level, index) {
+function nodesGenerator(data, $scope, $compile, level, datum) {
     let compiled = _.template('<tr ebp-treetable-node></tr>');
     let elems = $();
     angular.forEach(data, (e) => {
-        let el = $(compiled()).data('index', index);
+        let el = $(compiled()).data(datum || {});
         let scope = $scope.$new();
         scope.node = e;
         scope.level = level;
@@ -156,7 +161,7 @@ class TreeTableController {
 
         this.get = i => this.$children[i];
 
-        this.retrieve = node => {
+        this.retrieve = (node, recursive) => {
             let parentId = node?node.data.id:0;
             let deferred = $q.defer();
             if(!this.$readRepo) {
@@ -167,7 +172,9 @@ class TreeTableController {
                 }, data => {
                     if(node) {
                         this.data.push(...data);
-                        let elems = nodesGenerator(data, node.$el.scope(), $compile, node.$level + 1);
+                        let elems = nodesGenerator(data, node.$el.scope(), $compile, node.$level + 1, {
+                            expand: recursive
+                        });
                         elems.insertAfter(node.$el);
                         this.reIndex();
                     }
@@ -186,7 +193,9 @@ class TreeTableController {
                 level = node.$level + 1;
                 node.isParent = true;
             }
-            let elems = nodesGenerator(childData, scope, $compile, level, position);
+            let elems = nodesGenerator(childData, scope, $compile, level, {
+                index: position
+            });
             let prevElem = $element.find(`[ebp-treetable-node]:eq(${index})`);
             if(node) {
                 elems.insertAfter(prevElem);
@@ -198,6 +207,14 @@ class TreeTableController {
                 }
             }
             this.reIndex();
+        };
+
+        this.expandAll = () => {
+            angular.forEach(this.$children, node => {
+                if(node.isParent) {
+                    node.expand(true);
+                }
+            });
         };
 
     }
@@ -223,6 +240,8 @@ class TreeTableAdapter {
             }
             treeTable.add(index, null, newNode);
         };
+
+        this.expandAll = () => treeTable.expandAll();
     }
 
 }

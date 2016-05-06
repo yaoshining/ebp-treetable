@@ -496,6 +496,7 @@
 	    };
 
 	    var treeTableSettings = exports.treeTableSettings = {
+	        expandAll: false,
 	        colDefs: [],
 	        events: {
 	            edit: angular.noop,
@@ -582,6 +583,9 @@
 	    }
 
 	    function initSettings(settings) {
+	        this.settings = {
+	            expandAll: settings.expandAll
+	        };
 	        this.colDefs = _.sortBy(settings.colDefs || [], function (col) {
 	            return col.index;
 	        });
@@ -603,7 +607,9 @@
 	        var wrapper = $element.find('.ebp-tt-content-wrapper');
 	        var tbody = wrapper.find('tbody');
 
-	        tbody.append(nodesGenerator(this.data, $scope, $compile, 1));
+	        tbody.append(nodesGenerator(this.data, $scope, $compile, 1, {
+	            expand: this.settings.expandAll
+	        }));
 
 	        this.hideIndexCol = function () {
 	            $element.find('.ebp-tt-index-cell,.ebp-tt-index-col').hide();
@@ -615,11 +621,11 @@
 	        };
 	    }
 
-	    function nodesGenerator(data, $scope, $compile, level, index) {
+	    function nodesGenerator(data, $scope, $compile, level, datum) {
 	        var compiled = _.template('<tr ebp-treetable-node></tr>');
 	        var elems = $();
 	        angular.forEach(data, function (e) {
-	            var el = $(compiled()).data('index', index);
+	            var el = $(compiled()).data(datum || {});
 	            var scope = $scope.$new();
 	            scope.node = e;
 	            scope.level = level;
@@ -708,7 +714,7 @@
 	            return _this.$children[i];
 	        };
 
-	        this.retrieve = function (node) {
+	        this.retrieve = function (node, recursive) {
 	            var parentId = node ? node.data.id : 0;
 	            var deferred = $q.defer();
 	            if (!_this.$readRepo) {
@@ -721,7 +727,9 @@
 	                        var _data;
 
 	                        (_data = _this.data).push.apply(_data, _toConsumableArray(data));
-	                        var elems = nodesGenerator(data, node.$el.scope(), $compile, node.$level + 1);
+	                        var elems = nodesGenerator(data, node.$el.scope(), $compile, node.$level + 1, {
+	                            expand: recursive
+	                        });
 	                        elems.insertAfter(node.$el);
 	                        _this.reIndex();
 	                    }
@@ -748,7 +756,9 @@
 	                level = node.$level + 1;
 	                node.isParent = true;
 	            }
-	            var elems = nodesGenerator(childData, scope, $compile, level, position);
+	            var elems = nodesGenerator(childData, scope, $compile, level, {
+	                index: position
+	            });
 	            var prevElem = $element.find('[ebp-treetable-node]:eq(' + index + ')');
 	            if (node) {
 	                elems.insertAfter(prevElem);
@@ -760,6 +770,14 @@
 	                }
 	            }
 	            _this.reIndex();
+	        };
+
+	        this.expandAll = function () {
+	            angular.forEach(_this.$children, function (node) {
+	                if (node.isParent) {
+	                    node.expand(true);
+	                }
+	            });
 	        };
 	    };
 
@@ -790,6 +808,10 @@
 	                return;
 	            }
 	            treeTable.add(index, null, newNode);
+	        };
+
+	        this.expandAll = function () {
+	            return treeTable.expandAll();
 	        };
 	    };
 
@@ -1104,14 +1126,17 @@
 	                } else {
 	                    _this2.expandableCells = elem;
 	                }
+	                if (el.data('expand')) {
+	                    _this2.expand(true);
+	                }
 	            }
 	            el.append(elem);
 	        });
 
-	        function expandNodes() {
+	        function expandNodes(recursive) {
 	            var deferred = $q.defer();
 	            if (this.isParent && !this.loaded) {
-	                treeTable.retrieve(this).then(function () {
+	                treeTable.retrieve(this, recursive).then(function () {
 	                    deferred.resolve();
 	                });
 	                this.loaded = true;

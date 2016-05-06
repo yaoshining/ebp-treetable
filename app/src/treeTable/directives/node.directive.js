@@ -162,14 +162,17 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
             } else {
                 this.expandableCells = elem;
             }
+            if(el.data('expand')) {
+                this.expand(true);
+            }
         }
         el.append(elem);
     });
 
-    function expandNodes() {
+    function expandNodes(recursive) {
         let deferred = $q.defer();
         if(this.isParent && !this.loaded) {
-            treeTable.retrieve(this).then(() => {
+            treeTable.retrieve(this, recursive).then(() => {
                 deferred.resolve();
             });
             this.loaded = true;
