@@ -601,7 +601,7 @@
 	        }
 	    }
 
-	    function initTreeTable($element, $compile, $scope) {
+	    function initTreeTable($element, $compile, $scope, $timeout) {
 	        'ngInject';
 
 	        var wrapper = $element.find('.ebp-tt-content-wrapper');
@@ -619,6 +619,41 @@
 	            var cells = $element.find('table col:nth-child(' + index + ')');
 	            cells.width(width);
 	        };
+
+	        var bubble = $('<div>').addClass('ebp-tt-bubble').appendTo($element);
+
+	        $element.on({
+	            mouseover: function mouseover(event) {
+	                var target = event.target,
+	                    title = target.title || $(target).data('title'),
+	                    pos = $(target).position(),
+	                    width = $(target).width(),
+	                    height = $(target).height();
+	                if (title) {
+	                    (function () {
+	                        if (target.title) {
+	                            $(target).removeAttr('title').data('title', title);
+	                        }
+	                        bubble.removeClass('upward').css({
+	                            top: pos.top + height + 15,
+	                            left: pos.left + width / 2 + 5
+	                        }).text(title);
+	                        if ($element.height() - (pos.top + bubble.height() + height) < 10) {
+	                            bubble.css({
+	                                top: pos.top - height - 15
+	                            }).addClass('upward');
+	                        }
+	                        var timer = $timeout(function () {
+	                            bubble.fadeIn();
+	                        }, 1500);
+	                        $(target).one('mouseout', function () {
+	                            $timeout.cancel(timer);
+	                            bubble.stop().hide();
+	                        });
+	                    })();
+	                }
+	            }
+	        });
 	    }
 
 	    function nodesGenerator(data, $scope, $compile, level, datum) {
@@ -1063,8 +1098,8 @@
 	                    elem.addClass('ebp-tt-comp-cell');
 	                }
 	                if (col.type === 'crud') {
-	                    var addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add');
-	                    var delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete');
+	                    var addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add').attr('title', '插入节点');
+	                    var delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete').attr('title', '删除节点');
 	                    addBtn.click(function (event) {
 	                        event.preventDefault();
 	                        event.stopPropagation();
@@ -1699,7 +1734,7 @@
 	        });
 	        if (col) {
 	            if (col.type === 'crud') {
-	                var addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-insert-row');
+	                var addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-insert-row').attr('title', '操作列');
 	                addBtn.on('click', function (event) {
 	                    event.preventDefault();
 	                    events.add(null, treeTable.$children);

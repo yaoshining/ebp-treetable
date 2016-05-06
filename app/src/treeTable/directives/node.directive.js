@@ -102,8 +102,8 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
                 elem.addClass('ebp-tt-comp-cell');
             }
             if(col.type === 'crud') {
-                let addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add');
-                let delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete');
+                let addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add').attr('title', '插入节点');
+                let delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete').attr('title', '删除节点');
                 addBtn.click((event) => {
                     event.preventDefault();
                     event.stopPropagation();

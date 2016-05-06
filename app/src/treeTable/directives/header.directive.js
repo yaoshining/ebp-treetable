@@ -47,7 +47,7 @@ function linkFunc(scope, elem) {
     });
     if(col) {
         if(col.type === 'crud') {
-            let addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-insert-row');
+            let addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-insert-row').attr('title', '操作列');
             addBtn.on('click', (event) => {
                 event.preventDefault();
                 events.add(null, treeTable.$children);

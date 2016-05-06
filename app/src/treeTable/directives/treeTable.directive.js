@@ -64,7 +64,7 @@ function initDataSource($resource, settings) {
     }
 }
 
-function initTreeTable($element, $compile, $scope) {
+function initTreeTable($element, $compile, $scope, $timeout) {
     'ngInject';
     let wrapper = $element.find('.ebp-tt-content-wrapper');
     let tbody = wrapper.find('tbody');
@@ -81,6 +81,39 @@ function initTreeTable($element, $compile, $scope) {
         let cells = $element.find(`table col:nth-child(${index})`);
         cells.width(width);
     };
+
+    const bubble = $('<div>').addClass('ebp-tt-bubble').appendTo($element);
+
+    $element.on({
+        mouseover: (event) => {
+            const target = event.target,
+                  title = target.title || $(target).data('title'),
+                  pos = $(target).position(),
+                  width = $(target).width(),
+                  height = $(target).height();
+            if(title) {
+                if(target.title) {
+                    $(target).removeAttr('title').data('title', title);
+                }
+                bubble.removeClass('upward').css({
+                    top: pos.top + height + 15,
+                    left: pos.left + width/2 + 5
+                }).text(title);
+                if($element.height() - (pos.top + bubble.height() + height) < 10) {
+                    bubble.css({
+                        top: pos.top - height - 15
+                    }).addClass('upward');
+                }
+                let timer = $timeout(() => {
+                    bubble.fadeIn();
+                }, 1500);
+                $(target).one('mouseout', () => {
+                    $timeout.cancel(timer);
+                    bubble.stop().hide();
+                });
+            }
+        }
+    });
 }
 
 function nodesGenerator(data, $scope, $compile, level, datum) {
