@@ -514,6 +514,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
+	    /**
+	     * Created by yaoshining on 16/3/1.
+	     */
 	    'use strict';
 
 	    Object.defineProperty(exports, "__esModule", {
@@ -1694,14 +1697,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports) {
+	    /**
+	     * Created by yaoshining on 16/3/23.
+	     */
 	    'use strict';
 
 	    Object.defineProperty(exports, "__esModule", {
 	        value: true
 	    });
-	    /**
-	     * Created by yaoshining on 16/3/23.
-	     */
 	    function linkFunc(scope, elem) {
 	        var width = elem.width();
 	        var treeTable = scope.$ebpTreeTable;

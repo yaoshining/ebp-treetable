@@ -1,6 +1,7 @@
 /**
  * Created by yao
  */
+'use strict';
 import ebpTreeTable from './ebp-treetable';
 import routesConfig from './index.routes';
 import TreeTableDemoController from './demos/controllers/treeTableDemo.controller';
