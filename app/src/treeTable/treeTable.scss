@@ -259,6 +259,7 @@ $ebp-tt-default-col-width: 7em;
   z-index: 9999;
   text-align: center;
   white-space: nowrap;
+  box-shadow: 0 2px 4px 1px rgba(0, 0, 0, .19);
   &:before {
     content: '';
     width: 10px;
