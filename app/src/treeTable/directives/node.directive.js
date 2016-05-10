@@ -58,12 +58,14 @@ function initNode($scope, $element, $compile, $timeout, $q) {
                 });
                 events.add(this.adapter, children);
             } else {
-                treeTable.retrieve(this).$promise.then((data) => {
+                treeTable.retrieve(this).then((data) => {
                     events.add(this.adapter, data);
+                    this.loaded = true;
                 });
             }
         } else {
             events.add(this.adapter, null);
+            this.loaded = true;
         }
         this.$el.addClass('open');
     };

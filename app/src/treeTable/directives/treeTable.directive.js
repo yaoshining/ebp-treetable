@@ -1,7 +1,6 @@
 /**
  * Created by yaoshining on 16/3/1.
  */
-'use strict';
 import {directiveNames} from '../config';
 
 function initScroller(contentWrapper, headerWrapper) {

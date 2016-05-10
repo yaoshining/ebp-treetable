@@ -1,13 +1,12 @@
 /**
  * Created by yaoshining on 16/3/10.
  */
-'use strict';
 class TreeTableDemoController {
 
     constructor($scope) {
         'ngInject';
         $scope.treeTable = {
-            expandAll: true,
+            expandAll: false,
             colDefs: [{
                 name: 'name',
                 title: '名称',
@@ -50,7 +49,7 @@ class TreeTableDemoController {
                     setTimeout(function() {
                         var newNode = {
                             id: 999,
-                            name: '新插入的节点',
+                            name: '新插入的节点' + new Date(Date.now()).toTimeString(),
                             details: '新插入节点的详情',
                             startTime: '2016-05-06',
                             endTime: '2016-05-06',
