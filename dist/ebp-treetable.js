@@ -514,9 +514,6 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
-	    /**
-	     * Created by yaoshining on 16/3/1.
-	     */
 	    'use strict';
 
 	    Object.defineProperty(exports, "__esModule", {
@@ -1065,12 +1062,14 @@
 	                        events.add(_this.adapter, children);
 	                    })();
 	                } else {
-	                    treeTable.retrieve(_this).$promise.then(function (data) {
+	                    treeTable.retrieve(_this).then(function (data) {
 	                        events.add(_this.adapter, data);
+	                        _this.loaded = true;
 	                    });
 	                }
 	            } else {
 	                events.add(_this.adapter, null);
+	                _this.loaded = true;
 	            }
 	            _this.$el.addClass('open');
 	        };
@@ -1697,14 +1696,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports) {
-	    /**
-	     * Created by yaoshining on 16/3/23.
-	     */
 	    'use strict';
 
 	    Object.defineProperty(exports, "__esModule", {
 	        value: true
 	    });
+	    /**
+	     * Created by yaoshining on 16/3/23.
+	     */
 	    function linkFunc(scope, elem) {
 	        var width = elem.width();
 	        var treeTable = scope.$ebpTreeTable;

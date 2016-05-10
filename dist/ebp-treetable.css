@@ -204,7 +204,8 @@
           transform: translate(-50%, 0);
   display: none;
   z-index: 9999;
-  text-align: center; }
+  text-align: center;
+  white-space: nowrap; }
   .ebp-tt-bubble:before {
     content: '';
     width: 10px;
