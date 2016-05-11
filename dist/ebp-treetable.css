@@ -218,8 +218,8 @@
     top: -6.0710678118654755px;
     left: 50%;
     z-index: -1;
-    -webkit-transform: translate(-6.07107px, 0) rotate(45deg);
-            transform: translate(-6.07107px, 0) rotate(45deg); }
+    -webkit-transform: matrix(0.70711, 0.70711, -0.70711, 0.70711, -6.07107, 0);
+            transform: matrix(0.70711, 0.70711, -0.70711, 0.70711, -6.07107, 0); }
   .ebp-tt-bubble.upward:before {
     border-top: none;
     border-left: none;

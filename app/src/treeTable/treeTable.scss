@@ -271,7 +271,7 @@ $ebp-tt-default-col-width: 7em;
     top: -6.0710678118654755px;
     left: 50%;
     z-index: -1;
-    transform: translate(-6.0710678118654755px, 0) rotate(45deg);
+    transform: matrix(0.7071067812, 0.7071067812, -0.7071067812, 0.7071067812, -6.0710678118654755, 0);
   }
 
   &.upward {

@@ -7,7 +7,7 @@ function initScroller(contentWrapper, headerWrapper) {
     contentWrapper.on('scroll', () => {
         let scrollLeft = contentWrapper.prop('scrollLeft');
         headerWrapper.css({
-            transform: `translate(${-scrollLeft}px, 0)`
+            transform: `matrix(1, 0, 0, 1, ${-scrollLeft}, 0)`
         });
     });
 }
@@ -82,7 +82,7 @@ function initTreeTable($element, $compile, $scope, $timeout) {
         cells.width(width);
     };
 
-    const bubble = $('<div>').addClass('ebp-tt-bubble').appendTo($element);
+    const bubble = $('<div>').addClass('ebp-tt-bubble');
 
     $element.on({
         mouseover: (event) => {
@@ -92,6 +92,7 @@ function initTreeTable($element, $compile, $scope, $timeout) {
                   width = $(target).width(),
                   height = $(target).height();
             if(title) {
+                bubble.appendTo($element);
                 if(target.title) {
                     $(target).removeAttr('title').data('title', title);
                 }
@@ -99,7 +100,7 @@ function initTreeTable($element, $compile, $scope, $timeout) {
                     top: pos.top + height + 15,
                     left: pos.left + width/2 + 5
                 }).text(title);
-                if($element.height() - (pos.top + bubble.height() + height) < 10) {
+                if($element.height() - (pos.top + bubble.height() + height) < 20) {
                     bubble.css({
                         top: pos.top - height - 15
                     }).addClass('upward');
@@ -109,7 +110,7 @@ function initTreeTable($element, $compile, $scope, $timeout) {
                 }, 1500);
                 $(target).one('mouseout', () => {
                     $timeout.cancel(timer);
-                    bubble.stop().hide();
+                    bubble.stop().hide().detach();
                 });
             }
         }
