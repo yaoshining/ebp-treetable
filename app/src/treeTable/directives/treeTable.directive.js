@@ -115,6 +115,8 @@ function initTreeTable($element, $compile, $scope, $timeout) {
             }
         }
     });
+
+    wrapper.on('scroll', () => bubble.detach());
 }
 
 function nodesGenerator(data, $scope, $compile, level, datum) {

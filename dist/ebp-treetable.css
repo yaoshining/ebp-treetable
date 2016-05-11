@@ -88,6 +88,8 @@
         font-size: 1.6em;
         text-align: center;
         margin: 5px; }
+      .ebp-tt-content-wrapper table td a:focus {
+        outline: none; }
     .ebp-tt-content-wrapper table tr:last-child > td {
       border-bottom: none; }
     .ebp-tt-content-wrapper table tr:nth-child(odd) > td {

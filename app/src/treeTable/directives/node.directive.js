@@ -104,8 +104,8 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
                 elem.addClass('ebp-tt-comp-cell');
             }
             if(col.type === 'crud') {
-                let addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add').attr('title', '插入节点');
-                let delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete').attr('title', '删除节点');
+                let addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add').attr('title', '插入');
+                let delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete').attr('title', '删除');
                 addBtn.click((event) => {
                     event.preventDefault();
                     event.stopPropagation();
@@ -488,10 +488,6 @@ class EbpTreeTableNodeController {
                 this.reIndent();
                 grandpa.refreshLevelNum();
                 treeTable.reIndex();
-                if(angular.isArray(this.$children) && this.$children.length > 0) {
-                    this.isParent = true;
-                    this.$el.addClass('open');
-                }
                 if(parent.$children.length < 1) {
                     parent.isParent = false;
                 }
@@ -531,7 +527,10 @@ class EbpTreeTableNodeController {
                     node.$level++;
                 });
             });
-            prev.isParent = !!nodes.length;
+            prev.isParent = prev.isParent || !!nodes.length;
+            if(prev.isParent && nodes.length > 0) {
+                prev.expand();
+            }
             return true;
         }
 

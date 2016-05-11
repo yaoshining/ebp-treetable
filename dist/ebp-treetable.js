@@ -655,6 +655,10 @@
 	                }
 	            }
 	        });
+
+	        wrapper.on('scroll', function () {
+	            return bubble.detach();
+	        });
 	    }
 
 	    function nodesGenerator(data, $scope, $compile, level, datum) {
@@ -1113,8 +1117,8 @@
 	                    elem.addClass('ebp-tt-comp-cell');
 	                }
 	                if (col.type === 'crud') {
-	                    var addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add').attr('title', '插入节点');
-	                    var delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete').attr('title', '删除节点');
+	                    var addBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-add').attr('title', '插入');
+	                    var delBtn = $('<a>').addClass('ebp-tt-btn ebp-tt-btn-delete').attr('title', '删除');
 	                    addBtn.click(function (event) {
 	                        event.preventDefault();
 	                        event.stopPropagation();
@@ -1542,10 +1546,6 @@
 	                _this4.reIndent();
 	                grandpa.refreshLevelNum();
 	                treeTable.reIndex();
-	                if (angular.isArray(_this4.$children) && _this4.$children.length > 0) {
-	                    _this4.isParent = true;
-	                    _this4.$el.addClass('open');
-	                }
 	                if (parent.$children.length < 1) {
 	                    parent.isParent = false;
 	                }
@@ -1590,7 +1590,10 @@
 	                    node.$level++;
 	                });
 	            });
-	            prev.isParent = !!nodes.length;
+	            prev.isParent = prev.isParent || !!nodes.length;
+	            if (prev.isParent && nodes.length > 0) {
+	                prev.expand();
+	            }
 	            return true;
 	        }
 	    };

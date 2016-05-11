@@ -103,6 +103,10 @@ $ebp-tt-default-col-width: 7em;
         margin: 5px;
       }
 
+      a:focus {
+        outline: none;
+      }
+
     }
     tr:last-child > td {
       border-bottom: none;
