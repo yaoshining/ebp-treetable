@@ -1,6 +1,6 @@
 {
   "name": "ebp-treetable",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This is a table plugin with some tree features for the EBP platform.",
   "main": "index.js",
   "scripts": {
