@@ -1057,26 +1057,9 @@
 	        };
 
 	        this.add = function () {
-	            if (node.isParent) {
-	                if (_this.loaded) {
-	                    (function () {
-	                        var children = [];
-	                        angular.forEach(_this.$children, function (child) {
-	                            children.push(child.data);
-	                        });
-	                        events.add(_this.adapter, children);
-	                    })();
-	                } else {
-	                    treeTable.retrieve(_this).then(function (data) {
-	                        events.add(_this.adapter, data);
-	                        _this.loaded = true;
-	                    });
-	                }
-	            } else {
-	                events.add(_this.adapter, null);
-	                _this.loaded = true;
-	            }
-	            _this.$el.addClass('open');
+	            return _this.expand().then(function (data) {
+	                events.add(_this.adapter, data);
+	            });
 	        };
 
 	        $element.on({
@@ -1191,8 +1174,8 @@
 	        function expandNodes(recursive) {
 	            var deferred = $q.defer();
 	            if (this.isParent && !this.loaded) {
-	                treeTable.retrieve(this, recursive).then(function () {
-	                    deferred.resolve();
+	                treeTable.retrieve(this, recursive).then(function (data) {
+	                    deferred.resolve(data);
 	                });
 	                this.loaded = true;
 	            } else {
@@ -1201,7 +1184,7 @@
 	                    node.$el.removeClass('hidden').addClass(recursive ? 'open' : '');
 	                });
 	                this.loaded = true;
-	                deferred.resolve();
+	                deferred.resolve(this.$children);
 	            }
 	            el.addClass('open');
 	            return deferred.promise;
@@ -1590,10 +1573,11 @@
 	                    node.$level++;
 	                });
 	            });
-	            prev.isParent = prev.isParent || !!nodes.length;
-	            if (prev.isParent && nodes.length > 0) {
-	                prev.expand();
+	            if (!prev.isParent) {
+	                prev.isParent = !!nodes.length;
+	                prev.loaded = true;
 	            }
+	            prev.expand();
 	            return true;
 	        }
 	    };

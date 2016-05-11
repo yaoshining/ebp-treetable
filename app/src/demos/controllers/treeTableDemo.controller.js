@@ -6,7 +6,7 @@ class TreeTableDemoController {
     constructor($scope) {
         'ngInject';
         $scope.treeTable = {
-            expandAll: true,
+            expandAll: false,
             colDefs: [{
                 name: 'name',
                 title: '名称',

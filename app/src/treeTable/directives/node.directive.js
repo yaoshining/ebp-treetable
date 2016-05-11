@@ -49,26 +49,9 @@ function initNode($scope, $element, $compile, $timeout, $q) {
         events.remove(this.adapter);
     };
 
-    this.add = () => {
-        if(node.isParent) {
-            if(this.loaded) {
-                let children = [];
-                angular.forEach(this.$children, (child) => {
-                    children.push(child.data);
-                });
-                events.add(this.adapter, children);
-            } else {
-                treeTable.retrieve(this).then((data) => {
-                    events.add(this.adapter, data);
-                    this.loaded = true;
-                });
-            }
-        } else {
-            events.add(this.adapter, null);
-            this.loaded = true;
-        }
-        this.$el.addClass('open');
-    };
+    this.add = () => this.expand().then(data => {
+        events.add(this.adapter, data);
+    });
 
     $element.on({
         click: () => {
@@ -175,8 +158,8 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
     function expandNodes(recursive) {
         let deferred = $q.defer();
         if(this.isParent && !this.loaded) {
-            treeTable.retrieve(this, recursive).then(() => {
-                deferred.resolve();
+            treeTable.retrieve(this, recursive).then(data => {
+                deferred.resolve(data);
             });
             this.loaded = true;
         } else {
@@ -185,7 +168,7 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
                 node.$el.removeClass('hidden').addClass(recursive?'open':'');
             });
             this.loaded = true;
-            deferred.resolve();
+            deferred.resolve(this.$children);
         }
         el.addClass('open');
         return deferred.promise;
@@ -527,10 +510,11 @@ class EbpTreeTableNodeController {
                     node.$level++;
                 });
             });
-            prev.isParent = prev.isParent || !!nodes.length;
-            if(prev.isParent && nodes.length > 0) {
-                prev.expand();
+            if(!prev.isParent) {
+                prev.isParent = !!nodes.length;
+                prev.loaded = true;
             }
+            prev.expand();
             return true;
         }
 
