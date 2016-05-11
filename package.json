@@ -1,14 +1,14 @@
 {
-  "name": "ebp-ui",
+  "name": "ebp-treetable",
   "version": "1.0.0",
-  "description": "Provider some useful angular utils for EBP platform.",
+  "description": "This is a table plugin with some tree features for the EBP platform.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yaoshining/ebp-ui.git"
+    "url": "https://github.com/yaoshining/ebp-treetable.git"
   },
   "keywords": [
     "angular",
@@ -18,9 +18,9 @@
   "author": "yaoshining",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/yaoshining/ebp-ui/issues"
+    "url": "https://github.com/yaoshining/ebp-treetable/issues"
   },
-  "homepage": "https://github.com/yaoshining/ebp-ui",
+  "homepage": "https://github.com/yaoshining/ebp-treetable",
   "devDependencies": {
     "babel-core": "^6.5.2",
     "babel-loader": "^6.2.4",
