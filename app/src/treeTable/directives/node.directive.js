@@ -141,7 +141,8 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
             if(!node.isParent) {
                 handler.addClass('trans');
             }
-            this.expand = expandNodes;
+            this.expand = recursive => retrieveNodes.apply(this, [recursive]);
+            this.retrieve = recursive => retrieveNodes.apply(this, [recursive, true]);
             this.collapse = collapseNodes;
             if(this.expandableCells instanceof $) {
                 this.expandableCells.add(elem);
@@ -155,14 +156,17 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
         el.append(elem);
     });
 
-    function expandNodes(recursive) {
+    function retrieveNodes(recursive, collapse) {
         let deferred = $q.defer();
         if(this.isParent && !this.loaded) {
-            treeTable.retrieve(this, recursive).then(data => {
+            treeTable.retrieve(this, recursive, collapse).then(data => {
                 deferred.resolve(data);
             });
             this.loaded = true;
         } else {
+            if(collapse) {
+                return;
+            }
             let nodes = recursive?this.descendants:this.$children;
             angular.forEach(nodes, (node) => {
                 node.$el.removeClass('hidden').addClass(recursive?'open':'');
@@ -170,7 +174,7 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
             this.loaded = true;
             deferred.resolve(this.$children);
         }
-        el.addClass('open');
+        el.addClass(collapse?'':'open');
         return deferred.promise;
     }
 
@@ -183,6 +187,7 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
         });
         el.removeClass('open');
     }
+
 }
 
 function initProgressBar(cell, settings) {
@@ -477,10 +482,23 @@ class EbpTreeTableNodeController {
             }
         };
 
-        this.degrade = () => {
+        this.degrade = (beforeFn) => {
+            if(!beforeFn) {
+                beforeFn = (callback) => {
+                    callback();
+                };
+            } else if(!angular.isFunction(beforeFn)) {
+                throw new Error(`Expect a function to call, but got a/an ${typeof beforeFn}`);
+            }
             let parent = this.$parent || treeTable,
                 prev = parent.get(this.levelIndex - 1);
             if(prev) {
+                prev.retrieve().then(() => {
+                    beforeFn(callback);
+                });
+            }
+
+            let callback = () => {
                 prev.expand().then(() => {
                     if(degrade(parent, this.levelIndex - 1, this)) {
                         this.reIndent();
@@ -489,7 +507,7 @@ class EbpTreeTableNodeController {
                         prev.$el.addClass('open');
                     }
                 });
-            }
+            };
         };
 
         function degrade(parent, index, ...nodes) {
@@ -514,7 +532,7 @@ class EbpTreeTableNodeController {
                 prev.isParent = !!nodes.length;
                 prev.loaded = true;
             }
-            prev.expand();
+            // prev.expand();
             return true;
         }
 
@@ -590,7 +608,7 @@ class TreeTableNodeAdapter {
 
         this.upgrade = () => $node.upgrade();
 
-        this.degrade = () => $node.degrade();
+        this.degrade = (beforeFn) => $node.degrade(beforeFn);
     }
 
 }

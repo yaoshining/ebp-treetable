@@ -197,7 +197,7 @@ class TreeTableController {
 
         this.get = i => this.$children[i];
 
-        this.retrieve = (node, recursive) => {
+        this.retrieve = (node, recursive, collapse) => {
             let parentId = node?node.data.id:0;
             let deferred = $q.defer();
             if(!this.$readRepo) {
@@ -211,6 +211,9 @@ class TreeTableController {
                         let elems = nodesGenerator(data, node.$el.scope(), $compile, node.$level + 1, {
                             expand: recursive
                         });
+                        if(collapse) {
+                            elems.addClass('hidden');
+                        }
                         elems.insertAfter(node.$el);
                         this.reIndex();
                     }
