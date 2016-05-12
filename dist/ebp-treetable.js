@@ -754,7 +754,7 @@
 	            return _this.$children[i];
 	        };
 
-	        this.retrieve = function (node, recursive) {
+	        this.retrieve = function (node, recursive, collapse) {
 	            var parentId = node ? node.data.id : 0;
 	            var deferred = $q.defer();
 	            if (!_this.$readRepo) {
@@ -770,6 +770,9 @@
 	                        var elems = nodesGenerator(data, node.$el.scope(), $compile, node.$level + 1, {
 	                            expand: recursive
 	                        });
+	                        if (collapse) {
+	                            elems.addClass('hidden');
+	                        }
 	                        elems.insertAfter(node.$el);
 	                        _this.reIndex();
 	                    }
@@ -975,6 +978,12 @@
 	        value: true
 	    });
 
+	    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+	        return typeof obj;
+	    } : function (obj) {
+	        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+	    };
+
 	    function _toConsumableArray(arr) {
 	        if (Array.isArray(arr)) {
 	            for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
@@ -1157,7 +1166,12 @@
 	                if (!node.isParent) {
 	                    handler.addClass('trans');
 	                }
-	                _this2.expand = expandNodes;
+	                _this2.expand = function (recursive) {
+	                    return retrieveNodes.apply(_this2, [recursive]);
+	                };
+	                _this2.retrieve = function (recursive) {
+	                    return retrieveNodes.apply(_this2, [recursive, true]);
+	                };
 	                _this2.collapse = collapseNodes;
 	                if (_this2.expandableCells instanceof $) {
 	                    _this2.expandableCells.add(elem);
@@ -1171,14 +1185,17 @@
 	            el.append(elem);
 	        });
 
-	        function expandNodes(recursive) {
+	        function retrieveNodes(recursive, collapse) {
 	            var deferred = $q.defer();
 	            if (this.isParent && !this.loaded) {
-	                treeTable.retrieve(this, recursive).then(function (data) {
+	                treeTable.retrieve(this, recursive, collapse).then(function (data) {
 	                    deferred.resolve(data);
 	                });
 	                this.loaded = true;
 	            } else {
+	                if (collapse) {
+	                    return;
+	                }
 	                var nodes = recursive ? this.descendants : this.$children;
 	                angular.forEach(nodes, function (node) {
 	                    node.$el.removeClass('hidden').addClass(recursive ? 'open' : '');
@@ -1186,7 +1203,7 @@
 	                this.loaded = true;
 	                deferred.resolve(this.$children);
 	            }
-	            el.addClass('open');
+	            el.addClass(collapse ? '' : 'open');
 	            return deferred.promise;
 	        }
 
@@ -1535,10 +1552,23 @@
 	            }
 	        };
 
-	        this.degrade = function () {
+	        this.degrade = function (beforeFn) {
+	            if (!beforeFn) {
+	                beforeFn = function beforeFn(callback) {
+	                    callback();
+	                };
+	            } else if (!angular.isFunction(beforeFn)) {
+	                throw new Error('Expect a function to call, but got a/an ' + (typeof beforeFn === 'undefined' ? 'undefined' : _typeof(beforeFn)));
+	            }
 	            var parent = _this4.$parent || treeTable,
 	                prev = parent.get(_this4.levelIndex - 1);
 	            if (prev) {
+	                prev.retrieve().then(function () {
+	                    beforeFn(callback);
+	                });
+	            }
+
+	            var callback = function callback() {
 	                prev.expand().then(function () {
 	                    if (degrade(parent, _this4.levelIndex - 1, _this4)) {
 	                        _this4.reIndent();
@@ -1547,7 +1577,7 @@
 	                        prev.$el.addClass('open');
 	                    }
 	                });
-	            }
+	            };
 	        };
 
 	        function degrade(parent, index) {
@@ -1577,7 +1607,7 @@
 	                prev.isParent = !!nodes.length;
 	                prev.loaded = true;
 	            }
-	            prev.expand();
+	            // prev.expand();
 	            return true;
 	        }
 	    };
@@ -1671,8 +1701,8 @@
 	            return $node.upgrade();
 	        };
 
-	        this.degrade = function () {
-	            return $node.degrade();
+	        this.degrade = function (beforeFn) {
+	            return $node.degrade(beforeFn);
 	        };
 	    };
 
