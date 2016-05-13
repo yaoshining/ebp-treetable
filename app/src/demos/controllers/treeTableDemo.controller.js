@@ -81,8 +81,9 @@ class TreeTableDemoController {
 
         $scope.approval = function(node) {
             // node.shiftUp();
-            node.upgrade();
+            // node.upgrade();
             // $scope.treeTable.expandAll();
+            $scope.treeTable.upgrade($scope.treeTable.checkedNodes);
         };
 
         $scope.adjust = function(node) {

@@ -180,6 +180,13 @@ class TreeTableController {
             display: 'none'
         };
 
+        this.upgrade = (nodes) => {
+            if(!angular.isArray(nodes) || nodes.length < 1) {
+                return false;
+            }
+            console.dir(nodes[0].id);
+        };
+
         Object.defineProperties(this, {
             $el: {
                 get: () => $element
@@ -290,6 +297,8 @@ class TreeTableAdapter {
         this.expandAll = () => treeTable.expandAll();
 
         this.collapseAll = () => treeTable.collapseAll();
+
+        this.upgrade = (nodes) => treeTable.upgrade(nodes);
     }
 
 }

@@ -727,6 +727,13 @@
 	            display: 'none'
 	        };
 
+	        this.upgrade = function (nodes) {
+	            if (!angular.isArray(nodes) || nodes.length < 1) {
+	                return false;
+	            }
+	            console.dir(nodes[0].id);
+	        };
+
 	        Object.defineProperties(this, {
 	            $el: {
 	                get: function get() {
@@ -867,6 +874,10 @@
 
 	        this.collapseAll = function () {
 	            return treeTable.collapseAll();
+	        };
+
+	        this.upgrade = function (nodes) {
+	            return treeTable.upgrade(nodes);
 	        };
 	    };
 
@@ -1193,14 +1204,13 @@
 	                });
 	                this.loaded = true;
 	            } else {
-	                if (collapse) {
-	                    return;
+	                if (!collapse) {
+	                    var nodes = recursive ? this.descendants : this.$children;
+	                    angular.forEach(nodes, function (node) {
+	                        node.$el.removeClass('hidden').addClass(recursive ? 'open' : '');
+	                    });
+	                    this.loaded = true;
 	                }
-	                var nodes = recursive ? this.descendants : this.$children;
-	                angular.forEach(nodes, function (node) {
-	                    node.$el.removeClass('hidden').addClass(recursive ? 'open' : '');
-	                });
-	                this.loaded = true;
 	                deferred.resolve(this.$children);
 	            }
 	            el.addClass(collapse ? '' : 'open');
@@ -1271,7 +1281,13 @@
 	        var level = $scope.level;
 	        var parent = $scope.$parent.$node;
 	        var loaded = false;
+	        var id = _.uniqueId('node_');
 	        Object.defineProperties(this, {
+	            $id: {
+	                get: function get() {
+	                    return id;
+	                }
+	            },
 	            data: {
 	                get: function get() {
 	                    return $scope.node;
@@ -1621,6 +1637,11 @@
 
 	        var treeTable = $scope.$ebpTreeTable;
 	        Object.defineProperties(this, {
+	            id: {
+	                get: function get() {
+	                    return $node.$id;
+	                }
+	            },
 	            model: {
 	                get: function get() {
 	                    return $node.data;

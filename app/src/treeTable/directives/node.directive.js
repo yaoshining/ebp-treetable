@@ -164,14 +164,13 @@ function renderCell(el, treeTable, node, $compile, $scope, $q) {
             });
             this.loaded = true;
         } else {
-            if(collapse) {
-                return;
+            if(!collapse) {
+                let nodes = recursive?this.descendants:this.$children;
+                angular.forEach(nodes, (node) => {
+                    node.$el.removeClass('hidden').addClass(recursive?'open':'');
+                });
+                this.loaded = true;
             }
-            let nodes = recursive?this.descendants:this.$children;
-            angular.forEach(nodes, (node) => {
-                node.$el.removeClass('hidden').addClass(recursive?'open':'');
-            });
-            this.loaded = true;
             deferred.resolve(this.$children);
         }
         el.addClass(collapse?'':'open');
@@ -233,7 +232,11 @@ class EbpTreeTableNodeController {
         let level = $scope.level;
         let parent = $scope.$parent.$node;
         let loaded = false;
+        let id = _.uniqueId('node_');
         Object.defineProperties(this, {
+            $id: {
+                get: () => id
+            },
             data: {
                 get: () => $scope.node
             },
@@ -546,6 +549,9 @@ class TreeTableNodeAdapter {
         'ngInject';
         let treeTable = $scope.$ebpTreeTable;
         Object.defineProperties(this, {
+            id: {
+                get: () => $node.$id
+            },
             model: {
                 get: () => $node.data
             },
