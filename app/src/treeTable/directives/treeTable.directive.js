@@ -145,6 +145,7 @@ class TreeTableController {
         });
         settingsModel.assign($scope.$parent, $injector.instantiate(TreeTableAdapter, {treeTable: this}));
         let _checkedNodes = [];
+        let nodesMap = {};
         this.$children = [];
         this.remove = node => {
             _.remove(this.data, (item) => item.id === node.id);
@@ -163,6 +164,12 @@ class TreeTableController {
                 });
             });
         };
+
+        this.register = node => {
+            nodesMap[node.$id] = node;
+        };
+
+        this.deregister = node => delete nodesMap[node.$id];
 
         this.reIndex = () => {
             let elems = $element.find('[ebp-treetable-node]');
@@ -184,7 +191,24 @@ class TreeTableController {
             if(!angular.isArray(nodes) || nodes.length < 1) {
                 return false;
             }
-            console.dir(nodes[0].id);
+            if(_.uniq(_.map(nodes, node => nodesMap[node.id].$level)).length > 1) {
+                return false;
+            }
+            if(nodesMap[nodes[0].id].$level > 1) {
+                angular.forEach(_.map(nodes, node => nodesMap[node.id]).sort((a, b) => a.levelIndex < b.levelIndex), node => {
+                    let next = node.$parent.get(node.levelIndex + 1);
+                    node.upgrade(next && !next.checked);
+                });
+            }
+        };
+
+        this.degrade = (nodes) => {
+            if(!angular.isArray(nodes) || nodes.length < 1) {
+                return false;
+            }
+            if(_.uniq(_.map(nodes, node => nodesMap[node.id].$level)).length > 1) {
+                return false;
+            }
         };
 
         Object.defineProperties(this, {
@@ -299,6 +323,8 @@ class TreeTableAdapter {
         this.collapseAll = () => treeTable.collapseAll();
 
         this.upgrade = (nodes) => treeTable.upgrade(nodes);
+
+        this.degrade = (nodes) => treeTable.degrade(nodes);
     }
 
 }

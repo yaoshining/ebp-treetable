@@ -92,6 +92,7 @@ class TreeTableDemoController {
                 callback();
             });
             // $scope.treeTable.collapseAll();
+            // $scope.treeTable.degrade($scope.treeTable.checkedNodes);
         };
 
     }

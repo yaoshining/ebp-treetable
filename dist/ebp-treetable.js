@@ -690,6 +690,7 @@
 	        });
 	        settingsModel.assign($scope.$parent, $injector.instantiate(TreeTableAdapter, { treeTable: this }));
 	        var _checkedNodes = [];
+	        var nodesMap = {};
 	        this.$children = [];
 	        this.remove = function (node) {
 	            _.remove(_this.data, function (item) {
@@ -709,6 +710,14 @@
 	                    $scope: $scope
 	                });
 	            });
+	        };
+
+	        this.register = function (node) {
+	            nodesMap[node.$id] = node;
+	        };
+
+	        this.deregister = function (node) {
+	            return delete nodesMap[node.$id];
 	        };
 
 	        this.reIndex = function () {
@@ -731,7 +740,32 @@
 	            if (!angular.isArray(nodes) || nodes.length < 1) {
 	                return false;
 	            }
-	            console.dir(nodes[0].id);
+	            if (_.uniq(_.map(nodes, function (node) {
+	                return nodesMap[node.id].$level;
+	            })).length > 1) {
+	                return false;
+	            }
+	            if (nodesMap[nodes[0].id].$level > 1) {
+	                angular.forEach(_.map(nodes, function (node) {
+	                    return nodesMap[node.id];
+	                }).sort(function (a, b) {
+	                    return a.levelIndex < b.levelIndex;
+	                }), function (node) {
+	                    var next = node.$parent.get(node.levelIndex + 1);
+	                    node.upgrade(next && !next.checked);
+	                });
+	            }
+	        };
+
+	        this.degrade = function (nodes) {
+	            if (!angular.isArray(nodes) || nodes.length < 1) {
+	                return false;
+	            }
+	            if (_.uniq(_.map(nodes, function (node) {
+	                return nodesMap[node.id].$level;
+	            })).length > 1) {
+	                return false;
+	            }
 	        };
 
 	        Object.defineProperties(this, {
@@ -878,6 +912,10 @@
 
 	        this.upgrade = function (nodes) {
 	            return treeTable.upgrade(nodes);
+	        };
+
+	        this.degrade = function (nodes) {
+	            return treeTable.degrade(nodes);
 	        };
 	    };
 
@@ -1278,6 +1316,7 @@
 	        });
 	        this.$el = $element;
 	        var adapter = $injector.instantiate(TreeTableNodeAdapter, { $node: this, $scope: $scope });
+	        adapter.constructor.original = this;
 	        var level = $scope.level;
 	        var parent = $scope.$parent.$node;
 	        var loaded = false;
@@ -1387,6 +1426,7 @@
 	                }
 	            }
 	        });
+	        treeTable.register(this);
 	        {
 	            (function () {
 	                var parent = _this4.$parent;
@@ -1421,6 +1461,7 @@
 
 	        this.$destroy = function () {
 	            $element.remove();
+	            treeTable.deregister(_this4);
 	            $scope.$destroy();
 	        };
 
@@ -1535,16 +1576,19 @@
 	            _this4.exchange(target);
 	        };
 
-	        this.upgrade = function () {
+	        this.upgrade = function (cascade) {
 	            var target = _this4.$parent,
 	                parent = _this4.$parent,
 	                grandpa = treeTable;
 	            if (!parent) {
 	                return;
 	            }
-	            if (degrade.apply(undefined, [parent, _this4.levelIndex].concat(_toConsumableArray(_.filter(parent.$children, function (node) {
+	            if (cascade && degrade.apply(undefined, [parent, _this4.levelIndex].concat(_toConsumableArray(_.filter(parent.$children, function (node) {
 	                return node.levelIndex > _this4.levelIndex;
-	            }))))) {
+	            })))) || !cascade) {
+	                if (cascade) {
+	                    _this4.expand();
+	                }
 	                var index = target.levelIndex + 1;
 	                if (parent.$parent) {
 	                    grandpa = parent.$parent;
@@ -1623,7 +1667,6 @@
 	                prev.isParent = !!nodes.length;
 	                prev.loaded = true;
 	            }
-	            // prev.expand();
 	            return true;
 	        }
 	    };

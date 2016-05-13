@@ -229,6 +229,7 @@ class EbpTreeTableNodeController {
         });
         this.$el = $element;
         let adapter = $injector.instantiate(TreeTableNodeAdapter, {$node: this, $scope});
+        adapter.constructor.original = this;
         let level = $scope.level;
         let parent = $scope.$parent.$node;
         let loaded = false;
@@ -316,6 +317,7 @@ class EbpTreeTableNodeController {
                 }
             }
         });
+        treeTable.register(this);
         {
             let parent = this.$parent;
             if(parent) {
@@ -348,6 +350,7 @@ class EbpTreeTableNodeController {
 
         this.$destroy = () => {
             $element.remove();
+            treeTable.deregister(this);
             $scope.$destroy();
         };
 
@@ -456,14 +459,17 @@ class EbpTreeTableNodeController {
             this.exchange(target);
         };
 
-        this.upgrade = () => {
+        this.upgrade = (cascade) => {
             let target = this.$parent,
                 parent = this.$parent,
                 grandpa = treeTable;
             if(!parent) {
                 return;
             }
-            if(degrade(parent, this.levelIndex, ..._.filter(parent.$children, node => node.levelIndex > this.levelIndex))) {
+            if(cascade && degrade(parent, this.levelIndex, ..._.filter(parent.$children, node => node.levelIndex > this.levelIndex)) || !cascade) {
+                if(cascade) {
+                    this.expand();
+                }
                 let index = target.levelIndex + 1;
                 if(parent.$parent) {
                     grandpa = parent.$parent;
@@ -520,9 +526,7 @@ class EbpTreeTableNodeController {
             let prev = parent.get(index);
             angular.forEach(nodes, node => {
                 node.$level++;
-                _.remove(parent.$children, n => {
-                    return n === node;
-                });
+                _.remove(parent.$children, n => n === node);
                 prev.$children = prev.$children || [];
                 prev.$children.push(node);
                 node.$parent = prev;
@@ -535,7 +539,6 @@ class EbpTreeTableNodeController {
                 prev.isParent = !!nodes.length;
                 prev.loaded = true;
             }
-            // prev.expand();
             return true;
         }
 
