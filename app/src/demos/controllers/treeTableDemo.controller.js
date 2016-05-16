@@ -88,11 +88,13 @@ class TreeTableDemoController {
 
         $scope.adjust = function(node) {
             // node.shiftDown();
-            node.degrade(function(callback) {
+            // node.degrade(function(callback) {
+            //     callback();
+            // });
+            // $scope.treeTable.collapseAll();
+            $scope.treeTable.degrade($scope.treeTable.checkedNodes, function(callback) {
                 callback();
             });
-            // $scope.treeTable.collapseAll();
-            // $scope.treeTable.degrade($scope.treeTable.checkedNodes);
         };
 
     }

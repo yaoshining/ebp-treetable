@@ -532,6 +532,12 @@
 	        }
 	    }
 
+	    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+	        return typeof obj;
+	    } : function (obj) {
+	        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+	    };
+
 	    function _classCallCheck(instance, Constructor) {
 	        if (!(instance instanceof Constructor)) {
 	            throw new TypeError("Cannot call a class as a function");
@@ -749,7 +755,7 @@
 	                angular.forEach(_.map(nodes, function (node) {
 	                    return nodesMap[node.id];
 	                }).sort(function (a, b) {
-	                    return a.levelIndex < b.levelIndex;
+	                    return b.levelIndex - a.levelIndex;
 	                }), function (node) {
 	                    var next = node.$parent.get(node.levelIndex + 1);
 	                    node.upgrade(next && !next.checked);
@@ -757,7 +763,7 @@
 	            }
 	        };
 
-	        this.degrade = function (nodes) {
+	        this.degrade = function (nodes, beforeFn) {
 	            if (!angular.isArray(nodes) || nodes.length < 1) {
 	                return false;
 	            }
@@ -766,6 +772,36 @@
 	            })).length > 1) {
 	                return false;
 	            }
+	            if (!beforeFn) {
+	                beforeFn = function beforeFn(callback) {
+	                    callback();
+	                };
+	            } else if (!angular.isFunction(beforeFn)) {
+	                throw new Error('Expect a function to call, but got a/an ' + (typeof beforeFn === 'undefined' ? 'undefined' : _typeof(beforeFn)));
+	            }
+	            var pros = [];
+	            var originals = _.map(nodes, function (node) {
+	                var original = nodesMap[node.id];
+	                if (original.levelIndex > 0) {
+	                    (function () {
+	                        var defer = $q.defer();
+	                        node.degrade(function () {
+	                            return defer.resolve();
+	                        });
+	                        pros.push(defer.promise);
+	                    })();
+	                }
+	                return original;
+	            }).sort(function (a, b) {
+	                return a.levelIndex - b.levelIndex;
+	            });
+	            $q.all(pros).then(function () {
+	                beforeFn(function () {
+	                    return angular.forEach(originals, function (node) {
+	                        return node.degrade();
+	                    });
+	                });
+	            });
 	        };
 
 	        Object.defineProperties(this, {
@@ -914,8 +950,8 @@
 	            return treeTable.upgrade(nodes);
 	        };
 
-	        this.degrade = function (nodes) {
-	            return treeTable.degrade(nodes);
+	        this.degrade = function (nodes, beforeFn) {
+	            return treeTable.degrade(nodes, beforeFn);
 	        };
 	    };
 
@@ -1716,7 +1752,9 @@
 	        this.update = function (data) {
 	            _.merge(_this5.model, data);
 	            $node.render();
-	            $scope.$apply();
+	            if (!$scope.$$phase) {
+	                $scope.$apply();
+	            }
 	        };
 
 	        this.insert = function (index, newNode) {

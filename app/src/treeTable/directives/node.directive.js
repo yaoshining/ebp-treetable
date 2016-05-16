@@ -580,7 +580,9 @@ class TreeTableNodeAdapter {
         this.update = data => {
             _.merge(this.model, data);
             $node.render();
-            $scope.$apply();
+            if(!$scope.$$phase) {
+                $scope.$apply();
+            }
         };
 
         this.insert = (index, newNode) => {

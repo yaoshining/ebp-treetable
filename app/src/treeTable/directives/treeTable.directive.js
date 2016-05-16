@@ -195,20 +195,40 @@ class TreeTableController {
                 return false;
             }
             if(nodesMap[nodes[0].id].$level > 1) {
-                angular.forEach(_.map(nodes, node => nodesMap[node.id]).sort((a, b) => a.levelIndex < b.levelIndex), node => {
+                angular.forEach(_.map(nodes, node => nodesMap[node.id]).sort((a, b) => b.levelIndex - a.levelIndex), node => {
                     let next = node.$parent.get(node.levelIndex + 1);
                     node.upgrade(next && !next.checked);
                 });
             }
         };
 
-        this.degrade = (nodes) => {
+        this.degrade = (nodes, beforeFn) => {
             if(!angular.isArray(nodes) || nodes.length < 1) {
                 return false;
             }
             if(_.uniq(_.map(nodes, node => nodesMap[node.id].$level)).length > 1) {
                 return false;
             }
+            if(!beforeFn) {
+                beforeFn = (callback) => {
+                    callback();
+                };
+            } else if(!angular.isFunction(beforeFn)) {
+                throw new Error(`Expect a function to call, but got a/an ${typeof beforeFn}`);
+            }
+            let pros = [];
+            let originals = _.map(nodes, node => {
+                let original = nodesMap[node.id];
+                if(original.levelIndex > 0) {
+                    let defer = $q.defer();
+                    node.degrade(() => defer.resolve());
+                    pros.push(defer.promise);
+                }
+                return original;
+            }).sort((a, b) => a.levelIndex - b.levelIndex);
+            $q.all(pros).then(() => {
+                beforeFn(() => angular.forEach(originals, node => node.degrade()));
+            });
         };
 
         Object.defineProperties(this, {
@@ -322,9 +342,9 @@ class TreeTableAdapter {
 
         this.collapseAll = () => treeTable.collapseAll();
 
-        this.upgrade = (nodes) => treeTable.upgrade(nodes);
+        this.upgrade = nodes => treeTable.upgrade(nodes);
 
-        this.degrade = (nodes) => treeTable.degrade(nodes);
+        this.degrade = (nodes, beforeFn) => treeTable.degrade(nodes, beforeFn);
     }
 
 }
