@@ -107,7 +107,7 @@ function initTreeTable($element, $compile, $scope, $timeout) {
                 }
                 let timer = $timeout(() => {
                     bubble.fadeIn();
-                }, 1500);
+                }, 500);
                 $(target).one('mouseout', () => {
                     $timeout.cancel(timer);
                     bubble.stop().hide().detach();
@@ -289,8 +289,12 @@ class TreeTableController {
                 index: position
             });
             let prevElem = [];
-            if(prev && prev.loaded) {
-                prevElem = prev.$last.$el.next();
+            if(prev) {
+                if(prev.loaded) {
+                    prevElem = prev.$last.$el.next();
+                } else {
+                    prevElem = prev.$el.next();
+                }
             } else {
                 prevElem = $element.find(`[ebp-treetable-node]:eq(${index})`);
             }

@@ -652,7 +652,7 @@
 	                        }
 	                        var timer = $timeout(function () {
 	                            bubble.fadeIn();
-	                        }, 1500);
+	                        }, 500);
 	                        $(target).one('mouseout', function () {
 	                            $timeout.cancel(timer);
 	                            bubble.stop().hide().detach();
@@ -882,8 +882,12 @@
 	                index: position
 	            });
 	            var prevElem = [];
-	            if (prev && prev.loaded) {
-	                prevElem = prev.$last.$el.next();
+	            if (prev) {
+	                if (prev.loaded) {
+	                    prevElem = prev.$last.$el.next();
+	                } else {
+	                    prevElem = prev.$el.next();
+	                }
 	            } else {
 	                prevElem = $element.find('[ebp-treetable-node]:eq(' + index + ')');
 	            }

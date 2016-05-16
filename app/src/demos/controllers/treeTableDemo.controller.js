@@ -54,8 +54,7 @@ class TreeTableDemoController {
                             startTime: '2016-05-06',
                             endTime: '2016-05-06',
                             progress: 59
-                        }, index = 1;
-                        newNode.parentId = node?node.model.id:0;
+                        }, index = 0;
                         if(node) {
                             node.insert(index, newNode);
                         } else {
