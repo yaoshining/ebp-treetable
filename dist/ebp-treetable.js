@@ -870,7 +870,9 @@
 	            var index = position || 0,
 	                scope = $scope,
 	                level = 1;
+	            var prev = _this.get(index - 1);
 	            if (node) {
+	                prev = node.get(index - 1);
 	                index = position + node.$el.index();
 	                scope = node.$el.scope();
 	                level = node.$level + 1;
@@ -879,7 +881,12 @@
 	            var elems = nodesGenerator(childData, scope, $compile, level, {
 	                index: position
 	            });
-	            var prevElem = $element.find('[ebp-treetable-node]:eq(' + index + ')');
+	            var prevElem = [];
+	            if (prev && prev.loaded) {
+	                prevElem = prev.$last.$el.next();
+	            } else {
+	                prevElem = $element.find('[ebp-treetable-node]:eq(' + index + ')');
+	            }
 	            if (node) {
 	                elems.insertAfter(prevElem);
 	            } else {
@@ -1460,6 +1467,15 @@
 	                    });
 	                    return children;
 	                }
+	            },
+	            $last: {
+	                get: function get() {
+	                    if (!angular.isArray(_this4.$children)) {
+	                        return false;
+	                    } else {
+	                        return _this4.get(_this4.$children.length - 1);
+	                    }
+	                }
 	            }
 	        });
 	        treeTable.register(this);
@@ -1502,7 +1518,7 @@
 	        };
 
 	        this.get = function (i) {
-	            return _this4.$children[i];
+	            return _this4.$children ? _this4.$children[i] : null;
 	        };
 
 	        this.exchange = function (target) {

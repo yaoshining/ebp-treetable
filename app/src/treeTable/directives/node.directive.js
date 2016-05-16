@@ -315,6 +315,15 @@ class EbpTreeTableNodeController {
                     });
                     return children;
                 }
+            },
+            $last: {
+                get: () => {
+                    if(!angular.isArray(this.$children)) {
+                        return false;
+                    } else {
+                        return this.get(this.$children.length - 1);
+                    }
+                }
             }
         });
         treeTable.register(this);
@@ -354,7 +363,7 @@ class EbpTreeTableNodeController {
             $scope.$destroy();
         };
 
-        this.get = i => this.$children[i];
+        this.get = i => this.$children?this.$children[i]:null;
 
         this.exchange = target => {
             if(!target || angular.equals(this, target)) {

@@ -277,7 +277,9 @@ class TreeTableController {
         this.add = (position, node, ...childData) => {
             this.data.push(...childData);
             let index = position || 0, scope = $scope, level = 1;
+            let prev = this.get(index - 1);
             if(node) {
+                prev = node.get(index - 1);
                 index = position + node.$el.index();
                 scope = node.$el.scope();
                 level = node.$level + 1;
@@ -286,7 +288,12 @@ class TreeTableController {
             let elems = nodesGenerator(childData, scope, $compile, level, {
                 index: position
             });
-            let prevElem = $element.find(`[ebp-treetable-node]:eq(${index})`);
+            let prevElem = [];
+            if(prev && prev.loaded) {
+                prevElem = prev.$last.$el.next();
+            } else {
+                prevElem = $element.find(`[ebp-treetable-node]:eq(${index})`);
+            }
             if(node) {
                 elems.insertAfter(prevElem);
             } else {
