@@ -884,21 +884,17 @@
 	            var prevElem = [];
 	            if (prev) {
 	                if (prev.loaded) {
-	                    prevElem = prev.$last.$el.next();
+	                    prevElem = prev.$last.$el;
 	                } else {
-	                    prevElem = prev.$el.next();
+	                    prevElem = prev.$el;
 	                }
 	            } else {
 	                prevElem = $element.find('[ebp-treetable-node]:eq(' + index + ')');
 	            }
-	            if (node) {
+	            if (prevElem.length > 0 || node) {
 	                elems.insertAfter(prevElem);
 	            } else {
-	                if (prevElem.length > 0) {
-	                    elems.insertBefore(prevElem);
-	                } else {
-	                    elems.appendTo($element.find('.ebp-tt-content-wrapper tbody'));
-	                }
+	                elems.appendTo($element.find('.ebp-tt-content-wrapper tbody'));
 	            }
 	            _this.reIndex();
 	        };

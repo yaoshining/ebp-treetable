@@ -1,4 +1,5 @@
 <div style="height: 100%" ng-controller="TreeTableDemoController">
+    <input type="text" ng-model="index">
     <div ebp-treetable="treeTable">
         <div ebp-treetable-col title="流程操作" index="5">
             <a href title="审批" class="ebp-tt-btn ebp-tt-btn-approval" ng-click="approval($node)"></a>
