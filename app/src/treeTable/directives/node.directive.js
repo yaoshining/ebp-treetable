@@ -468,7 +468,7 @@ class EbpTreeTableNodeController {
             this.exchange(target);
         };
 
-        this.upgrade = (cascade) => {
+        this.upgrade = cascade => {
             let target = this.$parent,
                 parent = this.$parent,
                 grandpa = treeTable;
@@ -500,7 +500,7 @@ class EbpTreeTableNodeController {
             }
         };
 
-        this.degrade = (beforeFn) => {
+        this.degrade = beforeFn => {
             if(!beforeFn) {
                 beforeFn = (callback) => {
                     callback();
@@ -628,7 +628,7 @@ class TreeTableNodeAdapter {
 
         this.upgrade = () => $node.upgrade();
 
-        this.degrade = (beforeFn) => $node.degrade(beforeFn);
+        this.degrade = beforeFn => $node.degrade(beforeFn);
     }
 
 }

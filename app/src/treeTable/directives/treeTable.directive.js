@@ -216,7 +216,7 @@ class TreeTableController {
                 return false;
             }
             if(!beforeFn) {
-                beforeFn = (callback) => {
+                beforeFn = callback => {
                     callback();
                 };
             } else if(!angular.isFunction(beforeFn)) {
@@ -297,7 +297,7 @@ class TreeTableController {
             let prev = this.get(index - 1);
             if(node) {
                 prev = node.get(index - 1);
-                index = position + node.$el.index();
+                index = position + node.$el.index() + 1;
                 scope = node.$el.scope();
                 level = node.$level + 1;
                 node.isParent = true;
@@ -308,15 +308,15 @@ class TreeTableController {
             let prevElem = [];
             if(prev) {
                 if(prev.loaded) {
-                    prevElem = prev.$last.$el;
+                    prevElem = prev.$last.$el.next();
                 } else {
-                    prevElem = prev.$el;
+                    prevElem = prev.$el.next();
                 }
             } else {
                 prevElem = $element.find(`[ebp-treetable-node]:eq(${index})`);
             }
-            if(prevElem.length > 0 || node) {
-                elems.insertAfter(prevElem);
+            if(prevElem.length > 0) {
+                elems.insertBefore(prevElem);
             } else {
                 elems.appendTo(this.views.content.tbody);
             }
