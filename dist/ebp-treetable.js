@@ -626,9 +626,9 @@
 	            cells.width(width);
 	        };
 
-	        var bubble = $('<div>').addClass('ebp-tt-bubble');
+	        var bubble = this.views.bubble || $('<div>').addClass('ebp-tt-bubble');
 
-	        $element.on({
+	        $element.off('mouseover').on({
 	            mouseover: function mouseover(event) {
 	                var target = event.target,
 	                    title = target.title || $(target).data('title'),
@@ -665,6 +665,11 @@
 	        wrapper.on('scroll', function () {
 	            return bubble.detach();
 	        });
+
+	        this.views = {
+	            bubble: bubble,
+	            content: { wrapper: wrapper, tbody: tbody }
+	        };
 	    }
 
 	    function nodesGenerator(data, $scope, $compile, level, datum) {
@@ -698,6 +703,7 @@
 	        var _checkedNodes = [];
 	        var nodesMap = {};
 	        this.$children = [];
+	        this.views = {};
 	        this.remove = function (node) {
 	            _.remove(_this.data, function (item) {
 	                return item.id === node.id;
@@ -859,6 +865,17 @@
 	            return deferred.promise;
 	        };
 
+	        this.$destroy = function () {
+	            angular.forEach(_this.$children, function (node) {
+	                angular.forEach(node.descendants, function (node) {
+	                    node.$destroy();
+	                });
+	                node.$destroy();
+	            });
+	            _this.$children.length = 0;
+	            _this.views.bubble.detach();
+	        };
+
 	        this.add = function (position, node) {
 	            for (var _len = arguments.length, childData = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
 	                childData[_key - 2] = arguments[_key];
@@ -894,7 +911,7 @@
 	            if (prevElem.length > 0 || node) {
 	                elems.insertAfter(prevElem);
 	            } else {
-	                elems.appendTo($element.find('.ebp-tt-content-wrapper tbody'));
+	                elems.appendTo(_this.views.content.tbody);
 	            }
 	            _this.reIndex();
 	        };
@@ -913,6 +930,11 @@
 	                    node.collapse();
 	                }
 	            });
+	        };
+
+	        this.refresh = function () {
+	            _this.$destroy();
+	            _this.render();
 	        };
 	    };
 
@@ -959,6 +981,10 @@
 
 	        this.degrade = function (nodes, beforeFn) {
 	            return treeTable.degrade(nodes, beforeFn);
+	        };
+
+	        this.refresh = function () {
+	            return treeTable.refresh();
 	        };
 	    };
 

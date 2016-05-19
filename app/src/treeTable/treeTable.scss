@@ -130,6 +130,12 @@ $ebp-tt-default-col-width: 7em;
       }
 
     }
+
+    tbody:after {
+      content: '';
+      display: table-row;
+      height: 1px;
+    }
   }
 }
 

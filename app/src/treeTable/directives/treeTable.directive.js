@@ -82,9 +82,9 @@ function initTreeTable($element, $compile, $scope, $timeout) {
         cells.width(width);
     };
 
-    const bubble = $('<div>').addClass('ebp-tt-bubble');
+    const bubble = this.views.bubble || $('<div>').addClass('ebp-tt-bubble');
 
-    $element.on({
+    $element.off('mouseover').on({
         mouseover: (event) => {
             const target = event.target,
                   title = target.title || $(target).data('title'),
@@ -117,6 +117,11 @@ function initTreeTable($element, $compile, $scope, $timeout) {
     });
 
     wrapper.on('scroll', () => bubble.detach());
+
+    this.views = {
+        bubble,
+        content: {wrapper, tbody}
+    };
 }
 
 function nodesGenerator(data, $scope, $compile, level, datum) {
@@ -147,6 +152,7 @@ class TreeTableController {
         let _checkedNodes = [];
         let nodesMap = {};
         this.$children = [];
+        this.views = {};
         this.remove = node => {
             _.remove(this.data, (item) => item.id === node.id);
         };
@@ -274,6 +280,17 @@ class TreeTableController {
             return deferred.promise;
         };
 
+        this.$destroy = () => {
+            angular.forEach(this.$children, node => {
+                angular.forEach(node.descendants, node => {
+                    node.$destroy();
+                });
+                node.$destroy();
+            });
+            this.$children.length = 0;
+            this.views.bubble.detach();
+        };
+
         this.add = (position, node, ...childData) => {
             this.data.push(...childData);
             let index = position || 0, scope = $scope, level = 1;
@@ -301,7 +318,7 @@ class TreeTableController {
             if(prevElem.length > 0 || node) {
                 elems.insertAfter(prevElem);
             } else {
-                elems.appendTo($element.find('.ebp-tt-content-wrapper tbody'));
+                elems.appendTo(this.views.content.tbody);
             }
             this.reIndex();
         };
@@ -320,6 +337,11 @@ class TreeTableController {
                     node.collapse();
                 }
             });
+        };
+
+        this.refresh = () => {
+            this.$destroy();
+            this.render();
         };
     }
 
@@ -352,6 +374,8 @@ class TreeTableAdapter {
         this.upgrade = nodes => treeTable.upgrade(nodes);
 
         this.degrade = (nodes, beforeFn) => treeTable.degrade(nodes, beforeFn);
+
+        this.refresh = () => treeTable.refresh();
     }
 
 }

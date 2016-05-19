@@ -98,6 +98,10 @@
       background-color: #EFF4F7; }
     .ebp-tt-content-wrapper table tr.checked > td {
       background-color: #E4EFC9; }
+    .ebp-tt-content-wrapper table tbody:after {
+      content: '';
+      display: table-row;
+      height: 1px; }
 
 .ebp-tt-func-cell {
   text-align: center;
