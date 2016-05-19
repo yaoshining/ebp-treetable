@@ -5,7 +5,6 @@ class TreeTableDemoController {
 
     constructor($scope) {
         'ngInject';
-        $scope.index = 0;
         $scope.treeTable = {
             expandAll: false,
             colDefs: [{
@@ -50,12 +49,12 @@ class TreeTableDemoController {
                     setTimeout(function() {
                         var newNode = {
                             id: 999,
-                            name: '新插入的节点' + new Date().toTimeString(),
+                            name: '新插入的节点',
                             details: '新插入节点的详情',
                             startTime: '2016-05-06',
                             endTime: '2016-05-06',
                             progress: 59
-                        }, index = $scope.index;
+                        }, index;
                         if(node) {
                             node.insert(index, newNode);
                         } else {
