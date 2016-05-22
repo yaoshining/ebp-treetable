@@ -1192,7 +1192,9 @@
 	        $element.on({
 	            click: function click() {
 	                var checkeState = !_this.checked;
-	                treeTable.checkAll(false);
+	                _.forEach(treeTable.checkedNodes, function (node) {
+	                    return node.checked = false;
+	                });
 	                _this.checked = checkeState;
 	            }
 	        });
@@ -1344,8 +1346,8 @@
 	        function EbpTreeTableProgressbar(settings) {
 	            _classCallCheck(this, EbpTreeTableProgressbar);
 
-	            this.el = $('<div class="ebp-tt-progressbar">\n                    </div>');
-	            this.bar = $('<div class="ebp-tt-progressbar-inner">\n                        </div>');
+	            this.el = $('<div>').addClass('ebp-tt-progressbar');
+	            this.bar = $('<div>').addClass('ebp-tt-progressbar-inner');
 	            this.el.append(this.bar);
 	            this.value = settings.value;
 	            this.render();

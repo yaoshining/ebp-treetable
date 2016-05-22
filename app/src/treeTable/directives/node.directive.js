@@ -56,7 +56,7 @@ function initNode($scope, $element, $compile, $timeout, $q) {
     $element.on({
         click: () => {
             let checkeState = !this.checked;
-            treeTable.checkAll(false);
+            _.forEach(treeTable.checkedNodes, node => node.checked = false);
             this.checked = checkeState;
         }
     });
@@ -196,10 +196,8 @@ function initProgressBar(cell, settings) {
 
 class EbpTreeTableProgressbar {
     constructor(settings) {
-        this.el = $(`<div class="ebp-tt-progressbar">
-                    </div>`);
-        this.bar = $(`<div class="ebp-tt-progressbar-inner">
-                        </div>`);
+        this.el = $('<div>').addClass('ebp-tt-progressbar');
+        this.bar = $('<div>').addClass('ebp-tt-progressbar-inner');
         this.el.append(this.bar);
         this.value = settings.value;
         this.render();
