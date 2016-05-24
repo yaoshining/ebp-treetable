@@ -44,51 +44,14 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(1), __webpack_require__(6)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _layouts, _core) {
-	    'use strict';
-
-	    Object.defineProperty(exports, "__esModule", {
-	        value: true
-	    });
-
-	    var _layouts2 = _interopRequireDefault(_layouts);
-
-	    var _core2 = _interopRequireDefault(_core);
-
-	    function _interopRequireDefault(obj) {
-	        return obj && obj.__esModule ? obj : {
-	            default: obj
-	        };
-	    }
-
-	    /**
-	     * Created by yao on 15/12/4.
-	     */
-
-
-	    var ebpTreeTable = angular.module('ebp.treetable', ['ngResource', _layouts2.default.name, _core2.default.name]);
-
-	    exports.default = ebpTreeTable;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(2), __webpack_require__(3), __webpack_require__(4), __webpack_require__(5)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config, _layouts, _ebpLayoutDirective, _ebpLayoutContainer) {
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _core) {
 	  'use strict';
 
 	  Object.defineProperty(exports, "__esModule", {
 	    value: true
 	  });
 
-	  var config = _interopRequireWildcard(_config);
-
-	  var _layouts2 = _interopRequireDefault(_layouts);
-
-	  var _ebpLayoutDirective2 = _interopRequireDefault(_ebpLayoutDirective);
-
-	  var _ebpLayoutContainer2 = _interopRequireDefault(_ebpLayoutContainer);
+	  var _core2 = _interopRequireDefault(_core);
 
 	  function _interopRequireDefault(obj) {
 	    return obj && obj.__esModule ? obj : {
@@ -96,333 +59,19 @@
 	    };
 	  }
 
-	  function _interopRequireWildcard(obj) {
-	    if (obj && obj.__esModule) {
-	      return obj;
-	    } else {
-	      var newObj = {};
-
-	      if (obj != null) {
-	        for (var key in obj) {
-	          if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
-	        }
-	      }
-
-	      newObj.default = obj;
-	      return newObj;
-	    }
-	  }
-
-	  /**
-	   * Created by yao on 15/12/7.
-	   */
+	  var ebpTreeTable = angular.module('ebp.treetable', ['ngResource', _core2.default.name]); /**
+	                                                                                            * Created by yao on 15/12/4.
+	                                                                                            */
 
 
-	  var layoutsModule = angular.module('ebpUI.layouts', []);
-	  layoutsModule.directive(config.directiveNames.ebpLayout, _ebpLayoutDirective2.default).directive(config.directiveNames.ebpLayoutContainer, _ebpLayoutContainer2.default);
-
-	  for (var e in _layouts2.default) {
-	    layoutsModule.constant(e, _layouts2.default[e]);
-	  }
-
-	  exports.default = layoutsModule;
+	  exports.default = ebpTreeTable;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 2 */
+/* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports) {
-	  'use strict';
-
-	  Object.defineProperty(exports, "__esModule", {
-	    value: true
-	  });
-	  /**
-	   * Created by yao on 15/12/9.
-	   */
-	  var directiveNames = exports.directiveNames = {
-	    ebpLayout: 'ebpLayout',
-	    ebpLayoutContainer: 'ebpLayoutContainer'
-	  };
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports) {
-	    'use strict';
-
-	    Object.defineProperty(exports, "__esModule", {
-	        value: true
-	    });
-	    /**
-	     * Created by yao on 15/12/9.
-	     */
-	    var EbpLayoutType = {
-	        row: 'row',
-	        column: 'column'
-	    };
-
-	    exports.default = {
-	        EbpLayoutType: EbpLayoutType
-	    };
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
-	    'use strict';
-
-	    Object.defineProperty(exports, "__esModule", {
-	        value: true
-	    });
-
-	    function _classCallCheck(instance, Constructor) {
-	        if (!(instance instanceof Constructor)) {
-	            throw new TypeError("Cannot call a class as a function");
-	        }
-	    }
-
-	    var _createClass = function () {
-	        function defineProperties(target, props) {
-	            for (var i = 0; i < props.length; i++) {
-	                var descriptor = props[i];
-	                descriptor.enumerable = descriptor.enumerable || false;
-	                descriptor.configurable = true;
-	                if ("value" in descriptor) descriptor.writable = true;
-	                Object.defineProperty(target, descriptor.key, descriptor);
-	            }
-	        }
-
-	        return function (Constructor, protoProps, staticProps) {
-	            if (protoProps) defineProperties(Constructor.prototype, protoProps);
-	            if (staticProps) defineProperties(Constructor, staticProps);
-	            return Constructor;
-	        };
-	    }();
-
-	    function EbpLayoutDirectiveFactory(EbpLayoutType) {
-	        'ngInject';
-
-	        function linkFun(scope, elem, attrs, layout) {
-	            elem.addClass('ebp-layout');
-	            attrs.$observe(_config.directiveNames.ebpLayout, function (type) {
-	                var layoutType = type || EbpLayoutType.row;
-	                layout.layoutType = layoutType;
-	                layout.render();
-	            });
-	        }
-	        var directive = {
-	            restrict: 'A',
-	            scope: true,
-	            link: linkFun,
-	            controller: EbpLayoutController,
-	            controllerAs: '$ebpLayout'
-	        };
-
-	        return directive;
-	    }
-
-	    var EbpLayoutController = function () {
-	        function EbpLayoutController(EbpLayoutType) {
-	            'ngInject';
-
-	            _classCallCheck(this, EbpLayoutController);
-
-	            this.layoutItems = [];
-	            this.EbpLayoutType = EbpLayoutType;
-	        }
-
-	        _createClass(EbpLayoutController, [{
-	            key: 'render',
-	            value: function render() {
-	                var _this = this;
-
-	                this.calcSize();
-	                if (this.layoutType === this.EbpLayoutType.row) {
-	                    angular.forEach(this.layoutItems, function (item) {
-	                        item.render(_this.layoutType);
-	                    });
-	                }
-	                if (this.layoutType === this.EbpLayoutType.column) {
-	                    angular.forEach(this.layoutItems, function (item) {
-	                        item.render(_this.layoutType);
-	                    });
-	                }
-	            }
-	        }, {
-	            key: 'calcSize',
-	            value: function calcSize() {
-	                var size = 0,
-	                    assignedItems = [],
-	                    autoItems = [],
-	                    allPercent = true;
-	                angular.forEach(this.layoutItems, function (item) {
-	                    if (!item.size) {
-	                        autoItems.push(item);
-	                    } else {
-	                        allPercent = allPercent && angular.isNumber(item.size);
-	                        assignedItems.push(item);
-	                    }
-	                });
-	                if (assignedItems.length < 1) {
-	                    size = 100 / this.layoutItems.length;
-	                } else {
-	                    if (allPercent) {
-	                        var totalAssignedPercent = 0;
-	                        angular.forEach(assignedItems, function (item) {
-	                            totalAssignedPercent += item.size;
-	                        });
-	                        size = (100 - totalAssignedPercent) / autoItems.length;
-	                    } else {
-	                        (function () {
-	                            size = '';
-	                            var totalAssignedPercent = 0;
-	                            var offsets = [];
-	                            angular.forEach(assignedItems, function (item) {
-	                                if (angular.isNumber(item.size)) {
-	                                    totalAssignedPercent += item.size;
-	                                }
-	                                if (angular.isString(item.size)) {
-	                                    offsets.push(item);
-	                                }
-	                            });
-	                            if (offsets.length > 0) {
-	                                size = '(100%';
-	                                angular.forEach(offsets, function (item) {
-	                                    size += ' - ' + item.size;
-	                                });
-	                                if (totalAssignedPercent > 0) {
-	                                    size += ' - ' + totalAssignedPercent + '%';
-	                                }
-	                                size += ')';
-	                                if (autoItems.length > 0) {
-	                                    size += ' / ' + autoItems.length;
-	                                }
-	                            }
-	                        })();
-	                    }
-	                }
-	                angular.forEach(autoItems, function (item) {
-	                    item.size = size;
-	                });
-	            }
-	        }]);
-
-	        return EbpLayoutController;
-	    }();
-
-	    exports.default = EbpLayoutDirectiveFactory;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
-	    'use strict';
-
-	    Object.defineProperty(exports, "__esModule", {
-	        value: true
-	    });
-
-	    function _classCallCheck(instance, Constructor) {
-	        if (!(instance instanceof Constructor)) {
-	            throw new TypeError("Cannot call a class as a function");
-	        }
-	    }
-
-	    var _createClass = function () {
-	        function defineProperties(target, props) {
-	            for (var i = 0; i < props.length; i++) {
-	                var descriptor = props[i];
-	                descriptor.enumerable = descriptor.enumerable || false;
-	                descriptor.configurable = true;
-	                if ("value" in descriptor) descriptor.writable = true;
-	                Object.defineProperty(target, descriptor.key, descriptor);
-	            }
-	        }
-
-	        return function (Constructor, protoProps, staticProps) {
-	            if (protoProps) defineProperties(Constructor.prototype, protoProps);
-	            if (staticProps) defineProperties(Constructor, staticProps);
-	            return Constructor;
-	        };
-	    }();
-
-	    function EbpLayoutContainerDirectiveFactory() {
-	        function linkFunc(scope, elem, attrs, layout) {
-	            elem.addClass('ng-hide').addClass('ebp-layout-container');
-	            var size = attrs[_config.directiveNames.ebpLayoutContainer];
-	            if (size) {
-	                var regx = /^[0-9]+.?[0-9]*$/;
-	                if (regx.test(size)) {
-	                    scope.$ebpLayoutContainer.size = Number(size);
-	                } else {
-	                    scope.$ebpLayoutContainer.size = size;
-	                }
-	            }
-	            layout.layoutItems.push(scope.$ebpLayoutContainer);
-	        }
-	        var directive = {
-	            restrict: 'A',
-	            require: '^' + _config.directiveNames.ebpLayout,
-	            scope: true,
-	            link: linkFunc,
-	            controller: EbpLayoutContainerController,
-	            controllerAs: '$ebpLayoutContainer'
-	        };
-
-	        return directive;
-	    }
-
-	    var EbpLayoutContainerController = function () {
-	        function EbpLayoutContainerController($scope, EbpLayoutType, $element) {
-	            'ngInject';
-
-	            _classCallCheck(this, EbpLayoutContainerController);
-
-	            this.EbpLayoutType = EbpLayoutType;
-	            this.$ebpLayout = $scope.$ebpLayout;
-	            this.$el = $element;
-	        }
-
-	        _createClass(EbpLayoutContainerController, [{
-	            key: 'render',
-	            value: function render(type) {
-	                if (type === this.EbpLayoutType.row) {
-	                    if (angular.isNumber(this.size)) {
-	                        this.$el.height(this.size + '%');
-	                    } else {
-	                        this.$el.height('calc(' + this.size + ')');
-	                    }
-	                }
-	                if (type === this.EbpLayoutType.column) {
-	                    if (angular.isNumber(this.size)) {
-	                        this.$el.width(this.size + '%');
-	                    } else {
-	                        this.$el.width('calc(' + this.size + ')');
-	                    }
-	                }
-	                this.$el.removeClass('ng-hide');
-	            }
-	        }]);
-
-	        return EbpLayoutContainerController;
-	    }();
-
-	    exports.default = EbpLayoutContainerDirectiveFactory;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(7), __webpack_require__(8), __webpack_require__(9), __webpack_require__(10), __webpack_require__(11), __webpack_require__(12)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config, _treeTable, _column, _cell, _node, _header) {
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(2), __webpack_require__(3), __webpack_require__(4), __webpack_require__(5), __webpack_require__(6), __webpack_require__(7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config, _treeTable, _column, _cell, _node, _header) {
 	          'use strict';
 
 	          Object.defineProperty(exports, "__esModule", {
@@ -475,7 +124,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 7 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports) {
@@ -510,10 +159,10 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 8 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
 	    'use strict';
 
 	    Object.defineProperty(exports, "__esModule", {
@@ -992,10 +641,10 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 9 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
 	    'use strict';
 
 	    Object.defineProperty(exports, "__esModule", {
@@ -1036,10 +685,10 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 10 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(7)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports, _config) {
 	    'use strict';
 
 	    Object.defineProperty(exports, "__esModule", {
@@ -1086,7 +735,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 11 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports) {
@@ -1857,7 +1506,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 12 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (exports) {
