@@ -56,7 +56,8 @@ function initNode($scope, $element, $compile, $timeout, $q) {
     $element.on({
         click: () => {
             let checkeState = !this.checked;
-            _.forEach(treeTable.checkedNodes, node => node.checked = false);
+            let checkedNodes = angular.extend([], treeTable.checkedNodes);
+            angular.forEach(checkedNodes, node => node.checked = false);
             this.checked = checkeState;
         }
     });

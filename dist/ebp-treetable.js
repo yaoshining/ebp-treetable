@@ -1192,7 +1192,8 @@
 	        $element.on({
 	            click: function click() {
 	                var checkeState = !_this.checked;
-	                _.forEach(treeTable.checkedNodes, function (node) {
+	                var checkedNodes = angular.extend([], treeTable.checkedNodes);
+	                angular.forEach(checkedNodes, function (node) {
 	                    return node.checked = false;
 	                });
 	                _this.checked = checkeState;
