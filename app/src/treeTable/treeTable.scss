@@ -60,6 +60,7 @@ $ebp-tt-default-col-width: 7em;
   overflow: auto;
   height: calc(100% - #{$ebp-tt-header-height});
   color: #707070;
+  user-select: none;
   table {
     //width: 100%;
     table-layout: fixed;

@@ -486,6 +486,10 @@
 	            return _this.$children[i];
 	        };
 
+	        this.findElement = function (i) {
+	            return $element.find('[ebp-treetable-node]:eq(' + i + ')');
+	        };
+
 	        this.retrieve = function (node, recursive, collapse) {
 	            var parentId = node ? node.data.id : 0;
 	            var deferred = $q.defer();
@@ -555,7 +559,7 @@
 	                    prevElem = prev.$el.next();
 	                }
 	            } else {
-	                prevElem = $element.find('[ebp-treetable-node]:eq(' + index + ')');
+	                prevElem = _this.findElement(index);
 	            }
 	            if (prevElem.length > 0) {
 	                elems.insertBefore(prevElem);
@@ -753,9 +757,7 @@
 
 	    function _toConsumableArray(arr) {
 	        if (Array.isArray(arr)) {
-	            for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-	                arr2[i] = arr[i];
-	            }
+	            for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
 
 	            return arr2;
 	        } else {
@@ -839,13 +841,40 @@
 	        };
 
 	        $element.on({
-	            click: function click() {
-	                var checkeState = !_this.checked;
-	                var checkedNodes = angular.extend([], treeTable.checkedNodes);
-	                angular.forEach(checkedNodes, function (node) {
-	                    return node.checked = false;
-	                });
-	                _this.checked = checkeState;
+	            click: function click(e) {
+	                e.preventDefault();
+	                var checkState = !_this.checked;
+	                if (!e.ctrlKey && !e.metaKey) {
+	                    (function () {
+	                        var checkedNodes = angular.extend([], treeTable.checkedNodes);
+	                        var exclude = [];
+	                        if (checkState && e.shiftKey) {
+	                            if (checkedNodes.length > 0) {
+	                                var totalNodes = _.sortBy(exclude.concat(checkedNodes, [_this]), function (node) {
+	                                    return node.$el.index();
+	                                });
+	                                var begin = totalNodes[0];
+	                                var end = totalNodes[totalNodes.length - 1];
+
+	                                for (var next = begin; next !== end; next = next.$el.next().scope().$node) {
+	                                    if (totalNodes.indexOf(next) < 0) {
+	                                        totalNodes.push(next);
+	                                    }
+	                                }
+	                                angular.forEach(totalNodes, function (node) {
+	                                    return node.checked = checkState;
+	                                });
+	                                exclude = totalNodes;
+	                            }
+	                        }
+	                        angular.forEach(checkedNodes, function (node) {
+	                            if (exclude.indexOf(node) < 0) {
+	                                node.checked = false;
+	                            }
+	                        });
+	                    })();
+	                }
+	                _this.checked = checkState;
 	            }
 	        });
 	    }

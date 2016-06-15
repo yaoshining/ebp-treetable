@@ -54,11 +54,32 @@ function initNode($scope, $element, $compile, $timeout, $q) {
     });
 
     $element.on({
-        click: () => {
-            let checkeState = !this.checked;
-            let checkedNodes = angular.extend([], treeTable.checkedNodes);
-            angular.forEach(checkedNodes, node => node.checked = false);
-            this.checked = checkeState;
+        click: e => {
+            e.preventDefault();
+            let checkState = !this.checked;
+            if(!e.ctrlKey && !e.metaKey) {
+                let checkedNodes = angular.extend([], treeTable.checkedNodes);
+                let exclude = [];
+                if(checkState && e.shiftKey) {
+                    if(checkedNodes.length > 0) {
+                        let totalNodes = _.sortBy(exclude.concat(checkedNodes, [this]), node => node.$el.index()),
+                        [begin, end] = [totalNodes[0], totalNodes[totalNodes.length - 1]];
+                        for(let next = begin;next !== end;next = next.$el.next().scope().$node) {
+                            if(totalNodes.indexOf(next) < 0) {
+                                totalNodes.push(next);
+                            }
+                        }
+                        angular.forEach(totalNodes, node => node.checked = checkState);
+                        exclude = totalNodes;
+                    }
+                }
+                angular.forEach(checkedNodes, node => {
+                    if(exclude.indexOf(node) < 0) {
+                        node.checked = false;
+                    }
+                });
+            }
+            this.checked = checkState;
         }
     });
 }

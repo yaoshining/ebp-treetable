@@ -54,7 +54,11 @@
 .ebp-tt-content-wrapper {
   overflow: auto;
   height: calc(100% - 47px);
-  color: #707070; }
+  color: #707070;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none; }
   .ebp-tt-content-wrapper table {
     table-layout: fixed;
     border-collapse: collapse; }

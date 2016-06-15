@@ -254,6 +254,8 @@ class TreeTableController {
 
         this.get = i => this.$children[i];
 
+        this.findElement = i => $element.find(`[ebp-treetable-node]:eq(${i})`);
+
         this.retrieve = (node, recursive, collapse) => {
             let parentId = node?node.data.id:0;
             let deferred = $q.defer();
@@ -313,7 +315,7 @@ class TreeTableController {
                     prevElem = prev.$el.next();
                 }
             } else {
-                prevElem = $element.find(`[ebp-treetable-node]:eq(${index})`);
+                prevElem = this.findElement(index);
             }
             if(prevElem.length > 0) {
                 elems.insertBefore(prevElem);
