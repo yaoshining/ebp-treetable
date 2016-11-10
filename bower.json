@@ -28,7 +28,13 @@
     "bower_components",
     "test",
     "tests",
-    "app"
+    "app",
+    "data",
+    "e2e",
+    "gulp",
+    "gulpfile.js",
+    "karma.conf.js",
+    "protractor.conf.js"
   ],
   "dependencies": {
     "jquery": "~2.1.4",
