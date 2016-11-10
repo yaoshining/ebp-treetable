@@ -341,7 +341,8 @@ class TreeTableController {
             });
         };
 
-        this.refresh = () => {
+        this.refresh = params => {
+            this.$readRepo = this.$readRepo.bind(params);
             this.$destroy();
             this.render();
         };
@@ -377,7 +378,7 @@ class TreeTableAdapter {
 
         this.degrade = (nodes, beforeFn) => treeTable.degrade(nodes, beforeFn);
 
-        this.refresh = () => treeTable.refresh();
+        this.refresh = params => treeTable.refresh(params);
     }
 
 }

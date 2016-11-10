@@ -585,7 +585,8 @@
 	            });
 	        };
 
-	        this.refresh = function () {
+	        this.refresh = function (params) {
+	            _this.$readRepo = _this.$readRepo.bind(params);
 	            _this.$destroy();
 	            _this.render();
 	        };
@@ -636,8 +637,8 @@
 	            return treeTable.degrade(nodes, beforeFn);
 	        };
 
-	        this.refresh = function () {
-	            return treeTable.refresh();
+	        this.refresh = function (params) {
+	            return treeTable.refresh(params);
 	        };
 	    };
 
